@@ -8,7 +8,7 @@ interface C {
 }
 
 /** 首页 GUESTBOOK：浏览器端取全站最新 2 条评论；失败时只显示按钮 */
-export default function LatestGuestbook({ server, site }: { server: string; site: string }) {
+export default function LatestGuestbook({ server, site, host }: { server: string; site: string; host: string }) {
   const [items, setItems] = useState<C[]>([]);
   useEffect(() => {
     if (!server) return;
@@ -32,7 +32,7 @@ export default function LatestGuestbook({ server, site }: { server: string; site
           {items.map((c) => (
             <div className="qsl" key={c.id}>
               <div className="qsl-meta">
-                <span>TO wyy.ink</span>
+                <span>TO {host}</span>
                 <span>{String(c.date).slice(0, 10)}</span>
               </div>
               <div className="qsl-from">FROM {c.nick}</div>

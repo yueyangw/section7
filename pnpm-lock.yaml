@@ -200,7 +200,7 @@ importers:
         specifier: ^2.10.1
         version: 2.10.1(marked@18.1.2)
       astro:
-        specifier: ^7.4.4
+        specifier: ^7.0.0
         version: 7.4.4(@astrojs/markdown-remark@7.3.5)(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)
       hast-util-from-html:
         specifier: ^2.0.3
@@ -281,6 +281,25 @@ importers:
       vitest:
         specifier: ^5.0.5
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1))
+
+  demo:
+    dependencies:
+      astro:
+        specifier: ^7.4.4
+        version: 7.4.4(@astrojs/markdown-remark@7.3.5)(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15)(yaml@2.9.1)
+      section7-theme:
+        specifier: workspace:*
+        version: link:..
+    devDependencies:
+      '@astrojs/check':
+        specifier: ^0.9.12
+        version: 0.9.12(@emnapi/runtime@1.11.3)(prettier@3.9.10)(typescript@6.0.3)
+      pagefind:
+        specifier: ^1.6.0
+        version: 1.6.0
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
 
 packages:
 

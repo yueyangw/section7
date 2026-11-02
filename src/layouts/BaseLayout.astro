@@ -33,6 +33,7 @@ const {
   lightbox = false,
   progress = false,
 } = Astro.props;
+const ICON = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="#1f2a5a"/><text x="16" y="23" text-anchor="middle" font-family="monospace" font-weight="700" font-size="20" fill="#f6f5f1">7</text></svg>');
 const fullTitle = title ? `${title} · ${site.title}` : site.title;
 const canonical = new URL(Astro.url.pathname, site.url).toString();
 const ld = jsonLd ?? { '@context': 'https://schema.org', '@type': 'WebSite', name: site.title, url: site.url, description };
@@ -46,7 +47,7 @@ const ld = jsonLd ?? { '@context': 'https://schema.org', '@type': 'WebSite', nam
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={site.favicon ?? ICON} />
     <link rel="alternate" type="application/rss+xml" title={site.title} href="/rss.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     {noindex && <meta name="robots" content="noindex" />}

@@ -17,9 +17,3 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
-        env:
-          MATH_STRICT: '1'
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist

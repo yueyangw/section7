@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ditherGray } from '../src/lib/dither';
+import { ditherGray } from '../src/node/dither.js';
 
 const flat = (v: number, n = 16) => new Uint8Array(n * n).fill(v);
 

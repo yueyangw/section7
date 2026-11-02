@@ -48,9 +48,8 @@ export function slugOfType(t: string) {
 export const sectionName = (s: string) => `${s.toUpperCase().replace(/[^A-Z0-9]+/g, '-')}(7)`;
 export const siteTitleMan = `${site.manName}(7)`;
 
-export function repoSourceUrl(id: string, ext = 'md') {
-  return `${site.repo.url}/blob/${site.repo.branch}/src/content/posts/${id}/index.${ext}`;
-}
-export function repoHistoryUrl(id: string, ext = 'md') {
+/** 文章在仓库中的提交历史；未配置 site.repo 时为 undefined */
+export function repoHistoryUrl(id: string, ext = 'md'): string | undefined {
+  if (!site.repo) return undefined;
   return `${site.repo.url}/commits/${site.repo.branch}/src/content/posts/${id}/index.${ext}`;
 }

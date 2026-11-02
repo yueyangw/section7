@@ -71,9 +71,9 @@ const ld = {
           <div><dt>DATE</dt><dd><time datetime={isoWithZone(d.date)}>{ymd(d.date)}</time></dd></div>
           {d.updated && <div><dt>UPDATED</dt><dd>{ymd(d.updated)}</dd></div>}
           <div><dt>LENGTH</dt><dd>约 {readingMinutes(post.body ?? '')} 分钟</dd></div>
-          {site.artalk.server && site.artalk.pageview && <div><dt>VIEWS</dt><dd><span class="artalk-pv-count" data-page-key={postUrl(post)}>–</span></dd></div>}
+          {site.artalk.server && site.artalk.pageview && <div><dt>VIEWS</dt><dd><span class="artalk-pv-count" data-page-key={postUrl(post)} data-legacy={d.legacyViews ?? 0}>{d.legacyViews ?? '–'}</span></dd></div>}
           <div><dt>SOURCE</dt><dd><a href={`/posts/${post.id}.md`}>{post.id}.md</a></dd></div>
-          <div><dt>REVISIONS</dt><dd><a href={repoHistoryUrl(post.id, ext)}>历史</a></dd></div>
+          {repoHistoryUrl(post.id, ext) && <div><dt>REVISIONS</dt><dd><a href={repoHistoryUrl(post.id, ext)}>历史</a></dd></div>}
         </dl>
       </div>
     </header>

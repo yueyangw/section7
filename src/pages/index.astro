@@ -80,7 +80,7 @@ const noteRenders = await Promise.all(notes.map(async (n) => ({ n, C: (await ren
   }
 
   <Section name="GUESTBOOK">
-    <CommentLatest client:visible server={site.artalk.server} site={site.artalk.site} />
+    <CommentLatest client:visible server={site.artalk.server} site={site.artalk.site} host={site.manName.toLowerCase()} />
   </Section>
 
   <Section name="SEE ALSO" rule={false}>

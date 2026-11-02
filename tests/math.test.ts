@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createMathRenderer } from '../src/lib/math';
+import { createMathRenderer } from '../src/node/math.js';
 
 describe('math', () => {
   const r = createMathRenderer({ macros: { R: '\\mathbb{R}' } });

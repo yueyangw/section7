@@ -1,21 +1,38 @@
 {
-  "name": "section7",
-  "type": "module",
+  "name": "section7-theme",
   "version": "0.1.0",
-  "private": true,
+  "description": "section7：man page 风格的 Astro 博客主题",
+  "license": "MIT",
+  "type": "module",
   "packageManager": "pnpm@12.16.1",
   "engines": {
     "node": ">=22"
   },
+  "exports": {
+    ".": {
+      "types": "./src/node/index.d.ts",
+      "default": "./src/node/index.js"
+    },
+    "./content": "./content.ts",
+    "./types": "./src/config/types.ts"
+  },
+  "files": [
+    "src",
+    "content.ts",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
-    "preview": "astro preview",
-    "check": "astro check",
+    "dev": "pnpm --filter demo dev",
+    "build": "pnpm --filter demo build",
+    "preview": "pnpm --filter demo preview",
     "test": "vitest run",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "new": "tsx scripts/new-post.ts"
+    "check": "pnpm --filter demo check"
+  },
+  "peerDependencies": {
+    "astro": "^7.0.0"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.5",
@@ -29,7 +46,6 @@
     "@shikijs/rehype": "^4.5.0",
     "@shikijs/transformers": "^4.5.0",
     "artalk": "^2.10.1",
-    "astro": "^7.4.4",
     "hast-util-from-html": "^2.0.3",
     "hast-util-to-string": "^3.0.1",
     "mathjax-full": "^3.2.2",
