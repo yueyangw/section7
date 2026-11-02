@@ -10,10 +10,21 @@
 .prose > :last-child {
   margin-bottom: 0;
 }
-.prose p {
+/* :where 把优先级降到 0：顶层段落仍由 .prose > * 提供段间距，嵌套段落（列表、引用里）不额外留白 */
+:where(.prose) p {
   margin-block: 0;
+}
+.prose p {
   overflow-wrap: break-word;
   line-break: strict;
+}
+.prose :is(li, blockquote, details) > p + p {
+  margin-top: 12px;
+}
+/* 远程图片不经过 figure 包装，单独成段时居中 */
+.prose p > img:only-child {
+  display: block;
+  margin-inline: auto;
 }
 .prose strong {
   font-weight: 700;
@@ -108,10 +119,6 @@
 }
 .prose li::marker {
   color: var(--ink-2);
-}
-.prose ol > li::marker {
-  font-family: var(--font-mono);
-  font-size: 0.85em;
 }
 .prose ul.contains-task-list {
   list-style: none;

@@ -1,7 +1,51 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "preview", "runtimeExecutable": "npx", "runtimeArgs": ["-y", "pnpm@12.16.1", "exec", "astro", "preview", "--port", "4321"], "port": 4321 },
-    { "name": "dev", "runtimeExecutable": "npx", "runtimeArgs": ["-y", "pnpm@12.16.1", "--filter", "demo", "exec", "astro", "dev", "--port", "4322"], "port": 4322 }
+    {
+      "name": "preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y",
+        "pnpm@12.16.1",
+        "exec",
+        "astro",
+        "preview",
+        "--port",
+        "4321"
+      ],
+      "port": 4321
+    },
+    {
+      "name": "dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y",
+        "pnpm@12.16.1",
+        "--filter",
+        "demo",
+        "exec",
+        "astro",
+        "dev",
+        "--port",
+        "4322"
+      ],
+      "port": 4322
+    },
+    {
+      "name": "blog",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y",
+        "pnpm@12.16.1",
+        "--dir",
+        "../wyy-ink",
+        "exec",
+        "astro",
+        "preview",
+        "--port",
+        "4330"
+      ],
+      "port": 4330
+    }
   ]
 }
