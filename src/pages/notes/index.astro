@@ -1,0 +1,22 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import { getNotes } from '../../lib/content';
+import { ymdHm } from '../../lib/date';
+const notes = await Promise.all((await getNotes()).map(async (n) => ({ n, C: (await render(n)).Content })));
+---
+
+<BaseLayout title="笔记" manCenter="NOTES" lightbox>
+  <Section name="NOTES" rule={false}>
+    <h1 class="page-title" style="margin-bottom:24px">笔记</h1>
+    <ul class="notes-list">
+      {notes.map(({ n, C }) => (
+        <li id={n.id}>
+          <time datetime={n.data.date.toISOString()}><a href={`#${n.id}`} style="color:inherit">{ymdHm(n.data.date)}</a></time>
+          <div class="note-body prose"><C /></div>
+        </li>
+      ))}
+    </ul>
+  </Section>
+</BaseLayout>

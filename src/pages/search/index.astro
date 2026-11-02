@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+---
+
+<BaseLayout title="搜索" manCenter="SEARCH" noindex>
+  <Section name="SEARCH" rule={false}>
+    <h1 class="page-title">搜索</h1>
+    <p>在任意页面按 <kbd class="mono">/</kbd> 或 <kbd class="mono">⌘K</kbd> 都可以打开搜索。</p>
+    <button type="button" class="btn btn-primary" data-open-search>/ 打开搜索</button>
+  </Section>
+  <script>
+    if (new URLSearchParams(location.search).has('open')) document.querySelector<HTMLElement>('[data-open-search]')?.click();
+  </script>
+</BaseLayout>

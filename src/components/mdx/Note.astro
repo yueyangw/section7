@@ -1,0 +1,13 @@
+---
+interface Props {
+  type?: 'note' | 'tip' | 'warning' | 'danger';
+  title?: string;
+}
+const { type = 'note', title } = Astro.props;
+const labels = { note: 'NOTE', tip: 'TIP', warning: 'WARN', danger: 'DANGER' };
+---
+
+<aside class:list={['admonition', type]} data-label={labels[type]}>
+  {title && <p class="admonition-title">{title}</p>}
+  <slot />
+</aside>

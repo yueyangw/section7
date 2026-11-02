@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import { getPosts, tagCounts } from '../../lib/content';
+const tags = tagCounts(await getPosts());
+---
+
+<BaseLayout title="标签" manCenter="TAGS">
+  <Section name="TAGS" rule={false}>
+    <h1 class="page-title">标签</h1>
+    <ul class="tag-cloud" style="margin-top:20px">
+      {tags.map(([t, n]) => <li><a href={`/tags/${encodeURIComponent(t)}/`}>{t}</a> <small>{n}</small></li>)}
+    </ul>
+  </Section>
+</BaseLayout>

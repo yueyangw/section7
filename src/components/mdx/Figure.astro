@@ -1,0 +1,12 @@
+---
+interface Props {
+  caption?: string;
+  cols?: number;
+}
+const { caption, cols = 1 } = Astro.props;
+---
+
+<figure class="figure">
+  <div style={`display:grid;grid-template-columns:repeat(${cols},1fr);gap:12px`}><slot /></div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

@@ -1,0 +1,24 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import { mdxComponents } from '../../components/mdx';
+export async function getStaticPaths() {
+  return (await getCollection('projects')).map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+const { Content } = await render(p);
+---
+
+<BaseLayout title={p.data.title} description={p.data.summary} manCenter="PROJECTS" manRight={`${p.id.toUpperCase()}(7)`} lightbox>
+  <Section name="NAME" rule={false}>
+    <h1 class="page-title">{p.data.title}</h1>
+    <p class="lede">{p.data.summary}</p>
+    <p class="mono" style="font-size:13px">
+      {p.data.period} {p.data.links.map((l) => <> · <a href={l.url}>{l.label}</a></>)}
+    </p>
+  </Section>
+  <Section name="DESCRIPTION" narrow>
+    <div class="prose"><Content components={mdxComponents} /></div>
+  </Section>
+</BaseLayout>

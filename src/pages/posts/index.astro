@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import PostTable from '../../components/PostTable.astro';
+import { getPosts, groupByYear } from '../../lib/content';
+import { year } from '../../lib/date';
+import { POST_TYPES } from '../../config/site';
+const groups = groupByYear(await getPosts(), year);
+---
+
+<BaseLayout title="文章" manCenter="ARCHIVE" description="按年份排列的全部文章">
+  <Section name="ARCHIVE" rule={false}>
+    <h1 class="page-title">文章</h1>
+    <p class="filter-row" style="justify-content:flex-start">
+      筛选：<a href="/posts/">ALL</a>{POST_TYPES.map((t) => <> · <a href={`/types/${t.toLowerCase()}/`}>{t}</a></>)} · <a href="/tags/">标签</a>
+    </p>
+  </Section>
+  {
+    groups.map(([y, items]) => (
+      <div class="year-block">
+        <div class="year-num">{y}</div>
+        <div class="man-body"><PostTable posts={items} /></div>
+      </div>
+    ))
+  }
+</BaseLayout>

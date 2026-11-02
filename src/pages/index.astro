@@ -1,0 +1,91 @@
+---
+import { render, getEntry } from 'astro:content';
+import banner from '../assets/bluehour.png';
+import site from '../config/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import PostTable from '../components/PostTable.astro';
+import { mdxComponents } from '../components/mdx';
+import { getPosts, getNotes } from '../lib/content';
+import { ymdHm } from '../lib/date';
+import { getCollection } from 'astro:content';
+import { POST_TYPES } from '../config/site';
+import CommentLatest from '../islands/LatestGuestbook';
+
+const posts = (await getPosts()).slice(0, site.home.logCount);
+const notes = (await getNotes()).slice(0, site.home.noteCount);
+const aboutEntry = await getEntry('home', 'about');
+const About = aboutEntry ? (await render(aboutEntry)).Content : null;
+const navPages = (await getCollection('pages', (p) => !!p.data.nav)).sort((a, b) => a.data.nav!.order - b.data.nav!.order);
+const nav = [...site.nav, ...navPages.map((p) => ({ label: p.data.nav!.label, href: `/${p.id}/` }))];
+const noteRenders = await Promise.all(notes.map(async (n) => ({ n, C: (await render(n)).Content })));
+---
+
+<BaseLayout home manCenter={site.title}>
+  <Section name="NAME" rule={false} class="name-sec">
+    <h1 class="name-title">{site.manName.toLowerCase()} — {site.title}</h1>
+    <p class="lede">{site.description}</p>
+  </Section>
+
+  <Section name="SYNOPSIS" rule={false} tight>
+    <nav class="synopsis" aria-label="主导航">
+      <span class="cmd">{site.manName.toLowerCase()}</span>
+      {nav.map((n) => <a class="btn" href={n.href}>[{n.label}]</a>)}
+      <button type="button" class="btn btn-primary" data-open-search aria-keyshortcuts="/">/ 搜索</button>
+    </nav>
+  </Section>
+
+  {
+    site.home.banner && (
+      <figure class="banner">
+        <img src={banner.src} width={banner.width} height={banner.height} alt="深蓝色抖动风格的湖面蓝调时刻插画" />
+        <figcaption>蓝调时刻 · 2 色抖动</figcaption>
+      </figure>
+    )
+  }
+
+  {
+    About && (
+      <Section name="ABOUT">
+        <div class="about">
+          <div class="avatar" aria-hidden="true">{site.author.name[0]}</div>
+          <div class="prose"><About components={mdxComponents} /></div>
+        </div>
+      </Section>
+    )
+  }
+
+  <Section name="LOG">
+    <PostTable posts={posts} />
+    <div class="filter-row">
+      <span>筛选：{POST_TYPES.map((t, i) => <>{i > 0 && ' · '}<a href={`/types/${t.toLowerCase()}/`}>{t}</a></>)}</span>
+      <a class="btn" href="/posts/">按年份看全部 →</a>
+    </div>
+  </Section>
+
+  {
+    noteRenders.length > 0 && (
+      <Section name="NOTES">
+        <ul class="notes-list">
+          {noteRenders.map(({ n, C }) => (
+            <li>
+              <time datetime={n.data.date.toISOString()}>{ymdHm(n.data.date)}</time>
+              <div class="note-body"><C /></div>
+            </li>
+          ))}
+        </ul>
+        <p style="margin:14px 0 0"><a class="mono" href="/notes/">全部笔记 →</a></p>
+      </Section>
+    )
+  }
+
+  <Section name="GUESTBOOK">
+    <CommentLatest client:visible server={site.artalk.server} site={site.artalk.site} />
+  </Section>
+
+  <Section name="SEE ALSO" rule={false}>
+    <p class="see-also">
+      {site.seeAlso.map((s, i) => <>{i > 0 && ', '}<a href={s.href}>{s.label}</a>({s.section})</>)}
+    </p>
+  </Section>
+</BaseLayout>

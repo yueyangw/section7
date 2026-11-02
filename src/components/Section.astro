@@ -1,0 +1,16 @@
+---
+interface Props {
+  name: string;
+  narrow?: boolean;
+  rule?: boolean;
+  id?: string;
+  class?: string;
+  tight?: boolean;
+}
+const { name, narrow = false, rule = true, id, class: cls = '', tight = false } = Astro.props;
+---
+
+<section class:list={['man-section', { 'no-rule': !rule, tight }, cls]} id={id}>
+  <h2 class="man-label">{name}</h2>
+  <div class:list={['man-body', { narrow }]}><slot /></div>
+</section>

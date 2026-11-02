@@ -1,0 +1,12 @@
+---
+interface Props {
+  title?: string;
+  open?: boolean;
+}
+const { title = '展开', open = false } = Astro.props;
+---
+
+<details class="fold" open={open}>
+  <summary class="btn">{title}</summary>
+  <slot />
+</details>

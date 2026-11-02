@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const status = { active: '进行中', paused: '暂停', done: '完成' };
+---
+
+<BaseLayout title="项目" manCenter="PROJECTS">
+  <Section name="PROJECTS" rule={false}>
+    <h1 class="page-title" style="margin-bottom:24px">项目</h1>
+    <div class="table-scroll">
+      <table class="log-table">
+        <thead><tr><th>NAME</th><th>STATUS</th><th>PERIOD</th><th>SUMMARY</th></tr></thead>
+        <tbody>
+          {projects.map((p) => (
+            <tr>
+              <td><a href={`/projects/${p.id}/`}>{p.data.title}</a></td>
+              <td class="date">{status[p.data.status]}</td>
+              <td class="date">{p.data.period ?? ''}</td>
+              <td>{p.data.summary}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+</BaseLayout>

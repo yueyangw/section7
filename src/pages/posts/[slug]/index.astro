@@ -1,0 +1,163 @@
+---
+import { render } from 'astro:content';
+import site from '../../../config/site';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Section from '../../../components/Section.astro';
+import TypeTag from '../../../components/TypeTag.astro';
+import NewBadge from '../../../components/NewBadge.astro';
+import TocSidebar from '../../../islands/TocSidebar';
+import CommentSection from '../../../islands/CommentSection';
+import { mdxComponents } from '../../../components/mdx';
+import { getPosts, postUrl, summaryOf, repoHistoryUrl, type Post } from '../../../lib/content';
+import { ymd, readingMinutes, isoWithZone } from '../../../lib/date';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, prev: posts[i + 1], next: posts[i - 1], all: posts },
+  }));
+}
+interface Props {
+  post: Post;
+  prev?: Post;
+  next?: Post;
+  all: Post[];
+}
+const { post, prev, next, all } = Astro.props;
+const { Content, headings } = await render(post);
+const d = post.data;
+// 标题文本里带有 rehype-anchors 追加的 §，目录中去掉
+const toc = headings
+  .filter((h) => (h.depth === 2 || h.depth === 3) && h.slug !== 'footnote-label')
+  .map((h) => ({ ...h, text: h.text.replace(/\s*§$/, '') }));
+const ext = post.filePath?.endsWith('.mdx') ? 'mdx' : 'md';
+const manRight = `${post.id.toUpperCase()}(7)`;
+const seriesPosts = d.series ? all.filter((p) => p.data.series?.name === d.series!.name).sort((a, b) => a.data.series!.order - b.data.series!.order) : [];
+const related = all
+  .filter((p) => p.id !== post.id)
+  .map((p) => ({ p, n: p.data.tags.filter((t) => d.tags.includes(t)).length }))
+  .filter((x) => x.n > 0)
+  .sort((a, b) => b.n - a.n || b.p.data.date.getTime() - a.p.data.date.getTime())
+  .slice(0, 3)
+  .map((x) => x.p);
+const summary = summaryOf(post);
+const url = new URL(postUrl(post), site.url).toString();
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: d.title,
+  datePublished: isoWithZone(d.date),
+  dateModified: isoWithZone(d.updated ?? d.date),
+  author: { '@type': 'Person', name: site.author.name },
+  url,
+  description: summary,
+  keywords: d.tags.join(','),
+};
+---
+
+<BaseLayout title={d.title} description={summary} manCenter={`${d.type}${d.tags[0] ? ' · ' + d.tags[0] : ''}`} manRight={manRight} ogType="article" jsonLd={ld} lightbox progress>
+  <article data-pagefind-body>
+    <header class="man-section post-head">
+      <div class="man-label label-stack" style="text-transform:none">
+        <TypeTag type={d.type} />
+        <NewBadge date={d.date} />
+        {d.draft && <span class="mono" style="font-size:12px">DRAFT</span>}
+      </div>
+      <div class="man-body" style="display:flex;flex-direction:column">
+        <h1 data-pagefind-meta="title">{d.title}</h1>
+        <span data-pagefind-meta={`type:${d.type}`} hidden />
+        <dl class="meta-grid">
+          <div><dt>DATE</dt><dd><time datetime={isoWithZone(d.date)}>{ymd(d.date)}</time></dd></div>
+          {d.updated && <div><dt>UPDATED</dt><dd>{ymd(d.updated)}</dd></div>}
+          <div><dt>LENGTH</dt><dd>约 {readingMinutes(post.body ?? '')} 分钟</dd></div>
+          {site.artalk.server && site.artalk.pageview && <div><dt>VIEWS</dt><dd><span class="artalk-pv-count" data-page-key={postUrl(post)}>–</span></dd></div>}
+          <div><dt>SOURCE</dt><dd><a href={`/posts/${post.id}.md`}>{post.id}.md</a></dd></div>
+          <div><dt>REVISIONS</dt><dd><a href={repoHistoryUrl(post.id, ext)}>历史</a></dd></div>
+        </dl>
+      </div>
+    </header>
+
+    <Section name="SYNOPSIS" rule={false}>
+      <p style="margin:0;max-width:var(--prose-max);font-size:21px;line-height:1.75">{summary}</p>
+    </Section>
+
+    {
+      d.series && (
+        <Section name="SERIES" rule={false} tight narrow>
+          <div class="series-box">
+            {d.series.name} · 第 {d.series.order} / {seriesPosts.length} 篇
+          </div>
+        </Section>
+      )
+    }
+
+    {
+      toc.length > 0 && (
+        <nav aria-label="本页目录" class="man-section tight" style="padding-top:0">
+          <h2 class="man-label">CONTENTS</h2>
+          <ol class="man-body toc-inline">
+            {toc.filter((h) => h.depth === 2).map((h) => (
+              <li><a href={`#${h.slug}`}>{h.text}</a></li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <Section name="DESCRIPTION" rule={false} narrow>
+      <div class:list={['prose', { numbered: d.numbering }]}>
+        <Content components={mdxComponents} />
+      </div>
+    </Section>
+  </article>
+
+  {
+    d.series && seriesPosts.length > 1 && (
+      <Section name="SERIES" narrow>
+        <ol class="series-box" style="border:0;padding:0 0 0 1.6em;margin:0">
+          {seriesPosts.map((p) => (
+            <li>{p.id === post.id ? <strong>{p.data.title}</strong> : <a href={postUrl(p)}>{p.data.title}</a>}</li>
+          ))}
+        </ol>
+      </Section>
+    )
+  }
+
+  {
+    related.length > 0 && (
+      <Section name="SEE ALSO">
+        <p class="see-also" style="font-size:15px">
+          {related.map((p, i) => (
+            <>
+              {i > 0 && ', '}
+              <a href={postUrl(p)}>{p.data.title}</a>(7)
+            </>
+          ))}
+        </p>
+      </Section>
+    )
+  }
+
+  {
+    d.comments && (
+      <Section name="GUESTBOOK" id="guestbook" narrow rule={false}>
+        <CommentSection client:visible server={site.artalk.server} site={site.artalk.site} pageKey={postUrl(post)} pageTitle={d.title} />
+        <nav aria-label="上一篇与下一篇" class="prev-next" style="margin-top:24px">
+          {prev ? <a href={postUrl(prev)}>← {prev.data.title}</a> : <span />}
+          {next ? <a href={postUrl(next)}>{next.data.title} →</a> : <span />}
+        </nav>
+      </Section>
+    )
+  }
+  {
+    !d.comments && (
+      <nav aria-label="上一篇与下一篇" class="prev-next" style="margin-top:24px">
+        {prev ? <a href={postUrl(prev)}>← {prev.data.title}</a> : <span />}
+        {next ? <a href={postUrl(next)}>{next.data.title} →</a> : <span />}
+      </nav>
+    )
+  }
+
+  <TocSidebar client:idle items={toc.map((h) => ({ depth: h.depth, slug: h.slug, text: h.text }))} />
+</BaseLayout>

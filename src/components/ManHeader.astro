@@ -1,0 +1,15 @@
+---
+import site from '../config/site';
+interface Props {
+  center?: string;
+  right?: string;
+  home?: boolean;
+}
+const { center = site.title, right = `${site.manName}(7)`, home = false } = Astro.props;
+---
+
+<header class="man-head">
+  {home ? <span>{site.manName}(7)</span> : <a href="/">{site.manName}(7)</a>}
+  <span>{center}</span>
+  <span>{right}</span>
+</header>

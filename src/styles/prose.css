@@ -1,0 +1,399 @@
+.prose {
+  max-width: var(--prose-max);
+  font-size: 19px;
+  line-height: 1.85;
+  counter-reset: h2 fig;
+}
+.prose > * {
+  margin-block: 0 20px;
+}
+.prose > :last-child {
+  margin-bottom: 0;
+}
+.prose p {
+  margin-block: 0;
+  overflow-wrap: anywhere;
+}
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1.35;
+  color: var(--ink);
+  position: relative;
+  scroll-margin-top: 16px;
+}
+.prose h2 {
+  font-size: 27px;
+  margin-top: 28px;
+  counter-increment: h2;
+  counter-reset: h3;
+}
+.prose h3 {
+  font-size: 22px;
+  margin-top: 16px;
+  counter-increment: h3;
+}
+.prose h4 {
+  font-size: 19px;
+}
+.prose.numbered h2::before,
+.prose.numbered h3::before {
+  font-family: var(--font-mono);
+  font-size: 0.66em;
+  font-weight: 400;
+  color: var(--ink-2);
+  margin-right: 12px;
+}
+.prose.numbered h2::before {
+  content: counter(h2);
+}
+.prose.numbered h3::before {
+  content: counter(h2) '.' counter(h3);
+}
+.prose .anchor {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0;
+  color: var(--ink-2);
+}
+.prose h2:hover .anchor,
+.prose h3:hover .anchor,
+.prose h4:hover .anchor,
+.prose .anchor:focus {
+  opacity: 1;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.6em;
+}
+.prose li + li {
+  margin-top: 4px;
+}
+.prose li > ul,
+.prose li > ol {
+  margin-top: 4px;
+}
+.prose ul.contains-task-list {
+  list-style: none;
+  padding-left: 0.4em;
+}
+.prose blockquote {
+  margin-inline: 0;
+  padding-left: 18px;
+  border-left: 2px solid var(--ink);
+  font-style: italic;
+  color: var(--ink-2);
+}
+.prose blockquote > :first-child {
+  margin-top: 0;
+}
+.prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+.prose hr {
+  border: 0;
+  margin-block: 32px;
+  text-align: center;
+  height: auto;
+}
+.prose hr::before {
+  content: '· · ·';
+  font-family: var(--font-mono);
+  color: var(--ink-2);
+  letter-spacing: 0.3em;
+}
+:root[data-hr='line'] .prose hr {
+  border-top: 1px solid var(--ink);
+}
+:root[data-hr='line'] .prose hr::before {
+  content: none;
+}
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  padding: 1px 5px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+}
+.prose mark {
+  background: #ffe9a8;
+  color: var(--ink);
+  padding: 0 2px;
+}
+.prose kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 6px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  line-height: 1.6;
+  background: var(--paper-2);
+  border: 1px solid var(--ink);
+  box-shadow:
+    inset 1px 1px 0 var(--bevel-hi),
+    inset -1px -2px 0 var(--bevel-lo);
+}
+
+/* 三线表 */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  line-height: 1.6;
+  min-width: 520px;
+}
+.prose .table-scroll {
+  overflow-x: auto;
+}
+.prose thead tr {
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.prose th {
+  text-align: left;
+  padding: 8px 16px 8px 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.prose td {
+  padding: 10px 16px 10px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+.prose tbody tr:last-child td {
+  border-bottom: 1px solid var(--ink);
+}
+
+/* 图片：抖动图墨色像素 + 透明纸色，由容器提供 --paper 背景。
+   暗色模式时只需切换容器背景并对 <img> 做 invert filter。 */
+.prose figure.figure {
+  margin-inline: 0;
+}
+.prose figure.figure a {
+  display: block;
+  background: var(--paper);
+  line-height: 0;
+}
+.prose figure.figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+.prose figure.dither img {
+  image-rendering: pixelated;
+}
+.prose figure.figure figcaption {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+  counter-increment: fig;
+}
+.prose figure.figure figcaption::before {
+  content: '图 ' counter(fig) '　';
+  font-weight: 700;
+}
+
+/* 代码块 */
+.codeblock {
+  margin-inline: 0;
+}
+.codeblock > figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--indigo);
+  color: var(--on-dark);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.copy-btn {
+  min-height: 28px;
+  padding: 0 10px;
+  background: transparent;
+  border: 1px solid #8f9bd0;
+  color: var(--on-dark);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+}
+.copy-btn:focus-visible {
+  outline-color: #fff;
+}
+.codeblock pre {
+  margin: 0;
+  padding: 18px 20px;
+  background: var(--card) !important;
+  border: 1px solid var(--indigo);
+  border-top: 0;
+  font-family: var(--font-mono);
+  font-size: 14.5px;
+  line-height: 1.75;
+  overflow-x: auto;
+  tab-size: 4;
+}
+.codeblock pre code {
+  font-family: inherit;
+  display: block;
+  width: max-content;
+  min-width: 100%;
+}
+.codeblock.terminal pre {
+  background: var(--ink) !important;
+  color: #e9e8e2;
+}
+.codeblock .line.highlighted {
+  background: #eef0fb;
+  display: inline-block;
+  width: 100%;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+.codeblock .diff.add {
+  background: #e6f4ea;
+  display: inline-block;
+  width: 100%;
+}
+.codeblock .diff.remove {
+  background: #fbe9e9;
+  display: inline-block;
+  width: 100%;
+}
+
+/* 提示框 */
+.admonition {
+  position: relative;
+  padding: 24px 18px 14px;
+  border: 1px solid var(--lamp);
+  background: var(--lamp-bg);
+}
+.admonition::before {
+  content: attr(data-label);
+  position: absolute;
+  top: 6px;
+  left: 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--lamp);
+}
+.admonition > * {
+  margin-block: 0 8px;
+  font-size: 17px;
+  line-height: 1.7;
+}
+.admonition > :last-child {
+  margin-bottom: 0;
+}
+.admonition-title {
+  font-weight: 700;
+}
+.admonition.tip {
+  border-color: #1f6b4a;
+  background: #eef7f2;
+}
+.admonition.tip::before {
+  color: #1f6b4a;
+}
+.admonition.warning {
+  border-color: #8a6100;
+  background: #fbf5e1;
+}
+.admonition.warning::before {
+  color: #8a6100;
+}
+.admonition.danger {
+  border-color: #a12a2a;
+  background: #fbeeee;
+}
+.admonition.danger::before {
+  color: #a12a2a;
+}
+
+details.fold > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details.fold > summary::-webkit-details-marker {
+  display: none;
+}
+details.fold[open] > summary {
+  margin-bottom: 12px;
+}
+
+/* 脚注 */
+.prose sup {
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+}
+.prose section.footnotes {
+  margin-top: 40px;
+  font-size: 16px;
+  border-top: 1px solid var(--rule);
+}
+.prose section.footnotes > h2.sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  clip: auto;
+  overflow: visible;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  margin-top: 16px;
+}
+.prose section.footnotes > h2.sr-only::before {
+  content: none;
+}
+
+/* 数学 */
+.prose .math-block {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 4px 0;
+  text-align: center;
+}
+.prose .math-block mjx-container[display='true'] {
+  display: block;
+  text-align: center;
+  margin: 0 auto;
+}
+.prose mjx-container {
+  color: currentColor;
+}
+.prose mjx-container svg {
+  max-width: none;
+}
+mjx-assistive-mml {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 1px 0 0 0 !important;
+  border: 0 !important;
+  display: block !important;
+  width: auto !important;
+  overflow: hidden !important;
+  user-select: text;
+}
+mjx-container {
+  position: relative;
+}
+mjx-container[display='true'] mjx-assistive-mml {
+  width: 100% !important;
+}
+.math-inline {
+  white-space: nowrap;
+}

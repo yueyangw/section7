@@ -1,0 +1,11 @@
+---
+interface Props {
+  title?: string;
+}
+const { title = 'terminal' } = Astro.props;
+---
+
+<figure class="codeblock terminal">
+  <figcaption><span>{title}</span><button type="button" class="copy-btn" data-copy aria-label="复制代码">复制</button></figcaption>
+  <pre><code><slot /></code></pre>
+</figure>

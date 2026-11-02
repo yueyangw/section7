@@ -1,0 +1,19 @@
+---
+import type { Post } from '../lib/content';
+import PostRow from './PostRow.astro';
+interface Props {
+  posts: Post[];
+}
+const { posts } = Astro.props;
+---
+
+<div class="table-scroll">
+  <table class="log-table">
+    <thead>
+      <tr><th scope="col">DATE</th><th scope="col">TYPE</th><th scope="col">TITLE</th></tr>
+    </thead>
+    <tbody>
+      {posts.map((p) => <PostRow post={p} />)}
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,10 @@
+---
+import { isoWithZone } from '../lib/date';
+interface Props {
+  date: Date;
+}
+const { date } = Astro.props;
+---
+
+<!-- 无 JS 时保持 hidden（宁缺毋滥）；由 BaseLayout 内联脚本按访问时刻判定 -->
+<span class="new-badge" data-date={isoWithZone(date)} hidden>NEW!</span>

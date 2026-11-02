@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import site from '../config/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import CommentSection from '../islands/CommentSection';
+import { mdxComponents } from '../components/mdx';
+export async function getStaticPaths() {
+  return (await getCollection('pages')).map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+const { Content } = await render(p);
+---
+
+<BaseLayout title={p.data.title} description={p.data.description} manCenter={p.data.title} lightbox>
+  <Section name="NAME" rule={false}>
+    <h1 class="page-title">{p.data.title}</h1>
+  </Section>
+  <Section name="DESCRIPTION" narrow={p.data.layout === 'page'} rule={false}>
+    <div class="prose"><Content components={mdxComponents} /></div>
+  </Section>
+  {
+    p.data.comments && (
+      <Section name="GUESTBOOK" narrow>
+        <CommentSection client:visible server={site.artalk.server} site={site.artalk.site} pageKey={`/${p.id}/`} pageTitle={p.data.title} />
+      </Section>
+    )
+  }
+</BaseLayout>

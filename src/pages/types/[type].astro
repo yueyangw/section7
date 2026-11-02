@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import PostTable from '../../components/PostTable.astro';
+import { getPosts } from '../../lib/content';
+import { POST_TYPES } from '../../config/site';
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return POST_TYPES.map((t) => ({ params: { type: t.toLowerCase() }, props: { t, posts: posts.filter((p) => p.data.type === t) } }));
+}
+const { t, posts } = Astro.props;
+---
+
+<BaseLayout title={`类型 ${t}`} manCenter={`TYPE · ${t}`}>
+  <Section name={t} rule={false}>
+    <h1 class="page-title">{t}</h1>
+    <p class="mono" style="font-size:13px">{posts.length} 篇 · <a href="/posts/">全部文章</a></p>
+    {posts.length ? <PostTable posts={posts} /> : <p class="comments-note">这个类型下还没有文章。</p>}
+  </Section>
+</BaseLayout>

@@ -1,0 +1,313 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  background: var(--paper);
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.7;
+}
+a {
+  color: var(--link);
+  text-decoration: underline;
+}
+a:visited {
+  color: var(--link-visited);
+}
+a:hover {
+  color: var(--link-visited);
+}
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+.skip {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--card);
+  padding: 8px 12px;
+  z-index: 100;
+}
+.skip:focus {
+  left: 8px;
+  top: 8px;
+}
+.page {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 28px 32px 64px;
+}
+@media (max-width: 640px) {
+  .page {
+    padding: 16px 16px 48px;
+  }
+}
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* ---- man 页眉页脚 ---- */
+.man-head,
+.man-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.man-head {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ink);
+}
+.man-head a,
+.man-head a:visited {
+  color: var(--ink);
+}
+.man-foot {
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid var(--ink);
+}
+.man-foot-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.man-foot-extra a,
+.man-foot-extra a:visited {
+  color: var(--ink-2);
+}
+.man-foot-extra .sep + .sep {
+  display: none;
+}
+
+/* ---- 章节：左侧 150px 节名 + 右侧内容 ---- */
+.man-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 40px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.man-section.no-rule {
+  border-bottom: 0;
+}
+.man-section.tight {
+  padding-top: 0;
+}
+.man-label {
+  flex: 0 0 var(--label-w);
+  margin: 0;
+  padding-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.man-body {
+  flex: 1 1 600px;
+  min-width: 0;
+}
+.man-body.narrow {
+  max-width: var(--prose-max);
+}
+
+/* ---- 组件 ---- */
+.btn,
+button.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--paper-2);
+  border: 1px solid var(--ink);
+  box-shadow:
+    inset 1px 1px 0 var(--bevel-hi),
+    inset -2px -2px 0 var(--bevel-lo);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 0;
+}
+.btn:visited,
+.btn:hover {
+  color: var(--ink);
+}
+.btn:active {
+  box-shadow:
+    inset -1px -1px 0 var(--bevel-hi),
+    inset 2px 2px 0 var(--bevel-lo);
+}
+.btn-primary,
+.btn.btn-primary {
+  background: var(--indigo);
+  border-color: var(--indigo-border);
+  box-shadow:
+    inset 1px 1px 0 var(--indigo-hi),
+    inset -2px -2px 0 var(--indigo-lo);
+  color: var(--on-dark);
+}
+.btn-primary:visited,
+.btn-primary:hover {
+  color: var(--on-dark);
+}
+.btn-primary:active {
+  box-shadow:
+    inset -1px -1px 0 var(--indigo-hi),
+    inset 2px 2px 0 var(--indigo-lo);
+}
+.type-tag {
+  display: inline-block;
+  min-width: 40px;
+  padding: 1px 6px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+}
+.type-tag.solid {
+  background: var(--indigo);
+  border-color: var(--indigo);
+  color: var(--on-dark);
+}
+a.type-tag:visited {
+  color: var(--ink);
+}
+a.type-tag.solid:visited {
+  color: var(--on-dark);
+}
+.new-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--lamp);
+  color: #fff8ec;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.new-badge[hidden] {
+  display: none;
+}
+
+/* QSL 卡片 */
+.qsl {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  background: var(--card);
+  border: 1px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--rule);
+}
+.qsl-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.qsl-from {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--indigo);
+  overflow-wrap: anywhere;
+}
+.qsl p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.qsl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* 日志表 */
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 17px;
+}
+.log-table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px 8px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.log-table td {
+  padding: 10px 16px 10px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: baseline;
+}
+.log-table tr:last-child td {
+  border-bottom-color: var(--ink);
+}
+.log-table td.date {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  white-space: nowrap;
+  color: var(--ink-2);
+}
+.log-table td.ty {
+  white-space: nowrap;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

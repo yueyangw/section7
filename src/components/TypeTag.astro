@@ -1,0 +1,17 @@
+---
+interface Props {
+  type: string;
+  link?: boolean;
+}
+const { type, link = false } = Astro.props;
+const solid = type === 'NET' || type === 'AI';
+const cls = ['type-tag', ...(solid ? ['solid'] : [])];
+---
+
+{
+  link ? (
+    <a class:list={cls} href={`/types/${type.toLowerCase()}/`}>{type}</a>
+  ) : (
+    <span class:list={cls}>{type}</span>
+  )
+}

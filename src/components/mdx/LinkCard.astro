@@ -1,0 +1,18 @@
+---
+interface Props {
+  href: string;
+  title?: string;
+  desc?: string;
+}
+const { href, title = href, desc } = Astro.props;
+---
+
+<a class="linkcard" href={href} rel="noopener">
+  <span class="mono" style="font-size:12px;color:var(--ink-2)">{new URL(href).host}</span>
+  <strong>{title}</strong>
+  {desc && <span>{desc}</span>}
+</a>
+<style>
+  .linkcard { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; border: 1px solid var(--ink); background: var(--card); box-shadow: 3px 3px 0 var(--rule); color: var(--ink); text-decoration: none; }
+  .linkcard:visited { color: var(--ink); }
+</style>

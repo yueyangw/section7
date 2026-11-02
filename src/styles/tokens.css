@@ -1,0 +1,38 @@
+/* 设计 token：全站只通过变量取值。暗色模式（“入夜”）只需另给一组变量值。 */
+@import '@fontsource-variable/source-serif-4/index.css';
+@import '@fontsource-variable/source-serif-4/wght-italic.css';
+@import '@fontsource-variable/jetbrains-mono/index.css';
+@import '@fontsource/noto-serif-sc/chinese-simplified-400.css';
+@import '@fontsource/noto-serif-sc/chinese-simplified-600.css';
+@import '@fontsource/noto-serif-sc/chinese-simplified-900.css';
+@import '@fontsource/noto-serif-sc/400.css';
+@import '@fontsource/noto-serif-sc/900.css';
+
+:root {
+  --paper: #f6f5f1;
+  --paper-2: #ecebe5;
+  --card: #ffffff;
+  --ink: #1b2233;
+  --ink-2: #4a5163;
+  --rule: #d9d8d2;
+  --indigo: #1f2a5a;
+  --indigo-border: #0f1636;
+  --indigo-hi: #4a5ba0;
+  --indigo-lo: #121a3c;
+  --link: #2a3fb0;
+  --link-visited: #5b3a8a;
+  --lamp: #9c4a00;
+  --lamp-bg: #fbf3e9;
+  --on-dark: #f6f5f1;
+  --bevel-hi: #ffffff;
+  --bevel-lo: #bdbcb4;
+  --inset: #e3e2dc;
+
+  --font-serif: 'Source Serif 4 Variable', 'Source Serif 4', 'Noto Serif SC', Georgia, serif;
+  --font-display: 'Noto Serif SC', serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+
+  --page-max: 1120px;
+  --prose-max: 720px;
+  --label-w: 150px;
+}

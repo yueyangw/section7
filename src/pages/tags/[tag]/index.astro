@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Section from '../../../components/Section.astro';
+import PostTable from '../../../components/PostTable.astro';
+import { getPosts, tagCounts } from '../../../lib/content';
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return tagCounts(posts).map(([tag]) => ({ params: { tag }, props: { tag, posts: posts.filter((p) => p.data.tags.includes(tag)) } }));
+}
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title={`标签 ${tag}`} manCenter={`TAG · ${tag}`}>
+  <Section name="TAG" rule={false}>
+    <h1 class="page-title">#{tag}</h1>
+    <p class="mono" style="font-size:13px">{posts.length} 篇 · <a href="/tags/">全部标签</a></p>
+    <PostTable posts={posts} />
+  </Section>
+</BaseLayout>

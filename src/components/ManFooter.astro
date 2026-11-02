@@ -1,0 +1,46 @@
+---
+import site from '../config/site';
+import { applyTemplate } from '../lib/date';
+const f = site.footer;
+const blocks = f.blocks.filter((b) => (Array.isArray(b.value) ? b.value.length : String(b.value).trim()));
+---
+
+<footer>
+  <div class="man-foot">
+    <span>{applyTemplate(f.left)}</span>
+    {f.center && <span>{f.center}</span>}
+    <span>{applyTemplate(f.right)}</span>
+  </div>
+  {
+    (blocks.length > 0 || f.icp.number || f.police.number) && (
+      <div class="man-foot-extra">
+        {blocks.map((b) =>
+          b.type === 'text' ? (
+            <span>{applyTemplate(String(b.value))}</span>
+          ) : b.type === 'links' ? (
+            <span>
+              {(b.value as { label: string; url: string }[]).map((l, i) => (
+                <>
+                  {i > 0 && ' · '}
+                  <a href={l.url}>{l.label}</a>
+                </>
+              ))}
+            </span>
+          ) : (
+            <span set:html={applyTemplate(String(b.value))} />
+          ),
+        )}
+        {f.icp.number && (
+          <a href={f.icp.url} rel="noopener noreferrer" target="_blank">
+            {f.icp.number}
+          </a>
+        )}
+        {f.police.number && (
+          <a href={f.police.url || undefined} rel="noopener noreferrer" target="_blank">
+            {f.police.icon && <img src={f.police.icon} alt="" width="14" height="14" />} {f.police.number}
+          </a>
+        )}
+      </div>
+    )
+  }
+</footer>

@@ -1,0 +1,13 @@
+---
+import site from '../../config/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import CommentSection from '../../islands/CommentSection';
+---
+
+<BaseLayout title="留言簿" manCenter="GUESTBOOK">
+  <Section name="GUESTBOOK" rule={false} narrow>
+    <h1 class="page-title" style="margin-bottom:20px">留言簿</h1>
+    <CommentSection client:visible server={site.artalk.server} site={site.artalk.site} pageKey="/guestbook/" pageTitle="留言簿" />
+  </Section>
+</BaseLayout>

@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import PostTable from '../components/PostTable.astro';
+import { getPosts } from '../lib/content';
+const recent = (await getPosts()).slice(0, 5);
+---
+
+<BaseLayout title="404" manCenter="404" noindex>
+  <Section name="ERROR" rule={false}>
+    <p class="nomanual">No manual entry for <span id="path">this page</span></p>
+    <p><button type="button" class="btn btn-primary" data-open-search>/ 搜索</button> <a class="btn" href="/">回到首页</a></p>
+  </Section>
+  <Section name="SEE ALSO" rule={false}>
+    <PostTable posts={recent} />
+  </Section>
+  <script>
+    const el = document.getElementById('path');
+    if (el) el.textContent = location.pathname;
+  </script>
+</BaseLayout>

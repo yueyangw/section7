@@ -1,0 +1,114 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/prose.css';
+import '../styles/components.css';
+import site from '../config/site';
+import ManHeader from '../components/ManHeader.astro';
+import ManFooter from '../components/ManFooter.astro';
+import SearchDialog from '../islands/SearchDialog';
+import Lightbox from '../islands/Lightbox';
+
+interface Props {
+  title?: string;
+  description?: string;
+  manCenter?: string;
+  manRight?: string;
+  home?: boolean;
+  ogType?: 'website' | 'article';
+  jsonLd?: object;
+  noindex?: boolean;
+  lightbox?: boolean;
+  progress?: boolean;
+}
+const {
+  title,
+  description = site.description,
+  manCenter,
+  manRight,
+  home = false,
+  ogType = 'website',
+  jsonLd,
+  noindex = false,
+  lightbox = false,
+  progress = false,
+} = Astro.props;
+const fullTitle = title ? `${title} · ${site.title}` : site.title;
+const canonical = new URL(Astro.url.pathname, site.url).toString();
+const ld = jsonLd ?? { '@context': 'https://schema.org', '@type': 'WebSite', name: site.title, url: site.url, description };
+---
+
+<!doctype html>
+<html lang="zh-CN" data-hr={site.hr}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={site.title} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.title} />
+    <meta name="theme-color" content="#f6f5f1" />
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到正文</a>
+    {progress && site.readingProgress && <div class="reading-progress" id="reading-progress" aria-hidden="true" />}
+    <div class="page">
+      <ManHeader center={manCenter} right={manRight} home={home} />
+      <main id="main">
+        <slot />
+      </main>
+      <ManFooter />
+    </div>
+    <SearchDialog client:idle />
+    {lightbox && <Lightbox client:idle />}
+
+    <!-- NEW 标签：静态站点只能在浏览器里按访问时刻判断（无 JS 则不显示） -->
+    <script is:inline define:vars={{ days: site.newDays }}>
+      document.addEventListener('DOMContentLoaded', function () {
+        var now = Date.now();
+        document.querySelectorAll('.new-badge[data-date]').forEach(function (el) {
+          var d = now - new Date(el.getAttribute('data-date')).getTime();
+          if (d >= 0 && d <= days * 864e5) el.hidden = false;
+        });
+      });
+    </script>
+    <script>
+      // 复制代码 / 复制标题链接 / 阅读进度
+      document.addEventListener('click', (e) => {
+        const t = e.target as HTMLElement;
+        const btn = t.closest<HTMLElement>('[data-copy]');
+        if (btn) {
+          const code = btn.closest('figure')?.querySelector('pre')?.innerText ?? '';
+          navigator.clipboard?.writeText(code.replace(/\n$/, '')).then(() => {
+            const old = btn.textContent;
+            btn.textContent = '已复制';
+            setTimeout(() => (btn.textContent = old), 1500);
+          });
+          return;
+        }
+        const a = t.closest<HTMLAnchorElement>('a[data-copy-link]');
+        if (a) navigator.clipboard?.writeText(new URL(a.getAttribute('href')!, location.href).toString());
+      });
+      const bar = document.getElementById('reading-progress');
+      if (bar) {
+        const upd = () => {
+          const h = document.documentElement;
+          const max = h.scrollHeight - h.clientHeight;
+          bar.style.width = (max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0) + '%';
+        };
+        addEventListener('scroll', upd, { passive: true });
+        upd();
+      }
+    </script>
+  </body>
+</html>
