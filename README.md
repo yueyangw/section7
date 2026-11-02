@@ -17,7 +17,7 @@
 ## 在博客仓库中使用
 
 ```bash
-pnpm add astro section7-theme@github:yueyangw/section7
+pnpm add astro @astrojs/react @astrojs/mdx react react-dom section7-theme@github:yueyangw/section7
 ```
 
 `astro.config.ts`：
