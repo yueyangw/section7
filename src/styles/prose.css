@@ -1,5 +1,7 @@
 .prose {
   max-width: var(--prose-max);
+  /* 长单词 / URL 在段落、列表、引用里都允许断行，避免撑宽窄屏 */
+  overflow-wrap: break-word;
   font-size: 19px;
   line-height: 1.85;
   counter-reset: h2 fig;
@@ -15,7 +17,6 @@
   margin-block: 0;
 }
 .prose p {
-  overflow-wrap: break-word;
   line-break: strict;
 }
 .prose :is(li, blockquote, details) > p + p {
