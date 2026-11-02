@@ -148,6 +148,10 @@
   line-height: 1.6;
   min-width: 520px;
 }
+.prose img {
+  max-width: 100%;
+  height: auto;
+}
 .prose .table-scroll {
   overflow-x: auto;
 }

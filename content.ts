@@ -5,9 +5,10 @@ import { POST_TYPES } from './src/config/constants';
 
 const posts = defineCollection({
   loader: glob({
-    pattern: '*/index.{md,mdx}',
+    // 支持任意层级，如 posts/2024/05/12/<slug>/index.md；slug 取 index 所在目录名
+    pattern: '**/index.{md,mdx}',
     base: './src/content/posts',
-    generateId: ({ entry }) => entry.split('/')[0],
+    generateId: ({ entry }) => entry.split('/').slice(-2, -1)[0],
   }),
   schema: ({ image }) =>
     z.object({

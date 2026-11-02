@@ -48,8 +48,8 @@ export function slugOfType(t: string) {
 export const sectionName = (s: string) => `${s.toUpperCase().replace(/[^A-Z0-9]+/g, '-')}(7)`;
 export const siteTitleMan = `${site.manName}(7)`;
 
-/** 文章在仓库中的提交历史；未配置 site.repo 时为 undefined */
-export function repoHistoryUrl(id: string, ext = 'md'): string | undefined {
-  if (!site.repo) return undefined;
-  return `${site.repo.url}/commits/${site.repo.branch}/src/content/posts/${id}/index.${ext}`;
+/** 文章在仓库中的提交历史；未配置 site.repo 时为 undefined。filePath 为相对项目根的源文件路径 */
+export function repoHistoryUrl(filePath?: string): string | undefined {
+  if (!site.repo || !filePath) return undefined;
+  return `${site.repo.url}/commits/${site.repo.branch}/${filePath}`;
 }

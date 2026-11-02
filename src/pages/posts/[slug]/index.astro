@@ -31,7 +31,6 @@ const d = post.data;
 const toc = headings
   .filter((h) => (h.depth === 2 || h.depth === 3) && h.slug !== 'footnote-label')
   .map((h) => ({ ...h, text: h.text.replace(/\s*§$/, '') }));
-const ext = post.filePath?.endsWith('.mdx') ? 'mdx' : 'md';
 const manRight = `${post.id.toUpperCase()}(7)`;
 const seriesPosts = d.series ? all.filter((p) => p.data.series?.name === d.series!.name).sort((a, b) => a.data.series!.order - b.data.series!.order) : [];
 const related = all
@@ -72,15 +71,20 @@ const ld = {
           {d.updated && <div><dt>UPDATED</dt><dd>{ymd(d.updated)}</dd></div>}
           <div><dt>LENGTH</dt><dd>约 {readingMinutes(post.body ?? '')} 分钟</dd></div>
           {site.artalk.server && site.artalk.pageview && <div><dt>VIEWS</dt><dd><span class="artalk-pv-count" data-page-key={postUrl(post)} data-legacy={d.legacyViews ?? 0}>{d.legacyViews ?? '–'}</span></dd></div>}
-          <div><dt>SOURCE</dt><dd><a href={`/posts/${post.id}.md`}>{post.id}.md</a></dd></div>
-          {repoHistoryUrl(post.id, ext) && <div><dt>REVISIONS</dt><dd><a href={repoHistoryUrl(post.id, ext)}>历史</a></dd></div>}
+          <div><dt>SOURCE</dt><dd><a href={`/posts/${post.id}.md`}>Markdown 原文</a></dd></div>
+          {repoHistoryUrl(post.filePath) && <div><dt>REVISIONS</dt><dd><a href={repoHistoryUrl(post.filePath)}>历史</a></dd></div>}
         </dl>
       </div>
     </header>
 
-    <Section name="SYNOPSIS" rule={false}>
-      <p style="margin:0;max-width:var(--prose-max);font-size:21px;line-height:1.75">{summary}</p>
-    </Section>
+    {
+      /* 只有 frontmatter 明确写了 summary 才显示 SYNOPSIS，自动截取的摘要仅用于 meta 与列表 */
+      d.summary && (
+        <Section name="SYNOPSIS" rule={false}>
+          <p style="margin:0;max-width:var(--prose-max);font-size:21px;line-height:1.75">{d.summary}</p>
+        </Section>
+      )
+    }
 
     {
       d.series && (
