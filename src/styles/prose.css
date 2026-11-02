@@ -508,3 +508,14 @@ mjx-container[display='true'] mjx-assistive-mml {
 .math-inline {
   white-space: nowrap;
 }
+/* 窄屏上长行内公式不换行会撑宽整页：限制在容器宽度内，超出部分在公式自身里横向滚动 */
+@media (max-width: 640px) {
+  .prose .math-inline {
+    display: inline-block;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    vertical-align: middle;
+    scrollbar-width: thin;
+  }
+}
