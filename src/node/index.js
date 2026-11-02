@@ -9,7 +9,7 @@ import remarkGfm from 'remark-gfm';
 import remarkDirective from 'remark-directive';
 import rehypeSlug from 'rehype-slug';
 import rehypeShiki from '@shikijs/rehype';
-import { transformerNotationDiff, transformerNotationHighlight } from '@shikijs/transformers';
+import { transformerMetaHighlight, transformerNotationDiff, transformerNotationHighlight } from '@shikijs/transformers';
 import remarkDirectives from './remark-directives.js';
 import rehypeMath from './rehype-math.js';
 import rehypeImages from './rehype-images.js';
@@ -21,7 +21,7 @@ import { mergeSite } from './defaults.js';
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
 const PKG = here('../../');
 
-/** 解析代码块 meta：title="a.conf" */
+/** 解析代码块 meta：title="a.conf"；行高亮 {2,4-6} 由 transformerMetaHighlight 读取 __raw */
 function parseMeta(meta) {
   const out = {};
   const t = meta.match(/title=(?:"([^"]*)"|'([^']*)')/);
@@ -114,7 +114,7 @@ export default function section7(userSite = {}) {
               defaultLanguage: 'text',
               fallbackLanguage: 'text',
               parseMetaString: parseMeta,
-              transformers: [transformerNotationDiff(), transformerNotationHighlight(), langTransformer],
+              transformers: [transformerMetaHighlight(), transformerNotationDiff(), transformerNotationHighlight(), langTransformer],
             },
           ],
           rehypeCodeChrome,

@@ -14,10 +14,21 @@ body {
   font-family: var(--font-serif);
   font-size: 18px;
   line-height: 1.7;
+  /* 中文没有斜体/粗体字形时不要让浏览器伪造（伪斜体的宋体很难看） */
+  font-synthesis: none;
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  /* 中西文之间自动留白、标点挤压（不支持的浏览器忽略） */
+  text-autospace: normal;
+  text-spacing-trim: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 a {
   color: var(--link);
   text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
 }
 a:visited {
   color: var(--link-visited);

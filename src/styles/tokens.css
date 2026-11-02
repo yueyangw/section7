@@ -3,9 +3,10 @@
 @import '@fontsource-variable/source-serif-4/wght-italic.css';
 @import '@fontsource-variable/jetbrains-mono/index.css';
 @import '@fontsource/noto-serif-sc/chinese-simplified-400.css';
-@import '@fontsource/noto-serif-sc/chinese-simplified-600.css';
+@import '@fontsource/noto-serif-sc/chinese-simplified-700.css';
 @import '@fontsource/noto-serif-sc/chinese-simplified-900.css';
 @import '@fontsource/noto-serif-sc/400.css';
+@import '@fontsource/noto-serif-sc/700.css';
 @import '@fontsource/noto-serif-sc/900.css';
 
 :root {
@@ -28,9 +29,11 @@
   --bevel-lo: #bdbcb4;
   --inset: #e3e2dc;
 
-  --font-serif: 'Source Serif 4 Variable', 'Source Serif 4', 'Noto Serif SC', Georgia, serif;
-  --font-display: 'Noto Serif SC', serif;
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  /* 西文走 Source Serif 4，中文回退到思源宋体（Noto Serif SC），两者字重一一对应：400 / 700 / 900 */
+  --font-serif: 'Source Serif 4 Variable', 'Source Serif 4', 'Noto Serif SC', 'Songti SC', Georgia, serif;
+  --font-display: 'Source Serif 4 Variable', 'Source Serif 4', 'Noto Serif SC', 'Songti SC', serif;
+  /* 等宽字体里出现中文时回退到系统黑体，避免落到宋体与等宽西文混排 */
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', monospace;
 
   --page-max: 1120px;
   --prose-max: 720px;
