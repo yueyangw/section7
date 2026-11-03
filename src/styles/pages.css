@@ -895,3 +895,11 @@ img.avatar {
     font-size: 80px;
   }
 }
+
+/* 首页 ABOUT 的头像图片：与首字占位同为 96px（.pic 默认铺满容器，这里收回） */
+.about img.avatar {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
+  box-sizing: border-box;
+}
