@@ -1,6 +1,11 @@
-# 友链数据。avatar 可选；缺省显示首字母占位。
+# 友链数据。avatar 可选：不填时构建期自动抓取对方站点图标，抓不到显示首字。
 - id: example
   name: 示例站点
   url: https://example.com
   desc: 这是一条示例友链，请替换为真实数据。
   group: 友链
+- id: astro
+  name: Astro
+  url: https://astro.build
+  desc: 本主题使用的静态站点框架。
+  group: 工具

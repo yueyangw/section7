@@ -1,0 +1,10 @@
+# 也可以只放一个 yaml；没有 front 时用呼号排出正面
+call: W1XXX
+dir: sent
+date: 2026-09-12
+utc: '2210'
+freq: 21.250
+mode: SSB
+rst: '59'
+dxcc: 美国
+via: lotw

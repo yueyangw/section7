@@ -6,9 +6,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import PostTable from '../components/PostTable.astro';
 import { mdxComponents } from '../components/mdx';
-import { getPosts, getNotes } from '../lib/content';
+import Pic from '../components/Pic.astro';
+import { getPosts, getNotes, getNav } from '../lib/content';
+import { resolvePic } from '../lib/images';
 import { ymdHm } from '../lib/date';
-import { getCollection } from 'astro:content';
 import { POST_TYPES } from '../config/site';
 import CommentLatest from '../islands/LatestGuestbook';
 
@@ -16,8 +17,12 @@ const posts = (await getPosts()).slice(0, site.home.logCount);
 const notes = (await getNotes()).slice(0, site.home.noteCount);
 const aboutEntry = await getEntry('home', 'about');
 const About = aboutEntry ? (await render(aboutEntry)).Content : null;
-const navPages = (await getCollection('pages', (p) => !!p.data.nav)).sort((a, b) => a.data.nav!.order - b.data.nav!.order);
-const nav = [...site.nav, ...navPages.map((p) => ({ label: p.data.nav!.label, href: `/${p.id}/` }))];
+const nav = await getNav();
+const bannerCfg = site.home.banner;
+const customBanner = typeof bannerCfg === 'object' && bannerCfg ? bannerCfg : null;
+// 自定义横幅已经是要展示的图，按站点抖动；主题内置的蓝调时刻本身就是抖动图
+const bannerPic = customBanner ? await resolvePic(customBanner.src) : null;
+const avatar = site.author.avatar ? await resolvePic(site.author.avatar) : null;
 const noteRenders = await Promise.all(notes.map(async (n) => ({ n, C: (await render(n)).Content })));
 ---
 
@@ -36,11 +41,18 @@ const noteRenders = await Promise.all(notes.map(async (n) => ({ n, C: (await ren
   </Section>
 
   {
-    site.home.banner && (
+    bannerPic ? (
       <figure class="banner">
-        <img src={banner.src} width={banner.width} height={banner.height} alt="深蓝色抖动风格的湖面蓝调时刻插画" />
-        <figcaption>蓝调时刻 · 2 色抖动</figcaption>
+        <Pic pic={bannerPic} alt={customBanner!.alt ?? ''} lightbox={false} loading="eager" />
+        {customBanner!.caption && <figcaption>{customBanner!.caption}</figcaption>}
       </figure>
+    ) : (
+      bannerCfg && (
+        <figure class="banner">
+          <img src={banner.src} width={banner.width} height={banner.height} alt="深蓝色抖动风格的湖面蓝调时刻插画" />
+          <figcaption>蓝调时刻 · 2 色抖动</figcaption>
+        </figure>
+      )
     )
   }
 
@@ -48,7 +60,7 @@ const noteRenders = await Promise.all(notes.map(async (n) => ({ n, C: (await ren
     About && (
       <Section name="ABOUT">
         <div class="about">
-          <div class="avatar" aria-hidden="true">{site.author.name[0]}</div>
+          {avatar ? <Pic pic={avatar} class="avatar" lightbox={false} /> : <div class="avatar" aria-hidden="true">{site.author.name[0]}</div>}
           <div class="prose"><About components={mdxComponents} /></div>
         </div>
       </Section>

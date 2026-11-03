@@ -1,0 +1,218 @@
+---
+/** QSL 卡片墙：数据来自 src/content/qsl/，正面图可选，背面缺省时用通联记录生成 */
+import site from '../../config/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import { getQsl, bandOf } from '../../lib/content';
+import { resolvePic } from '../../lib/images';
+import { ymd } from '../../lib/date';
+
+const me = site.author.callsign || site.manName;
+const VIA: Record<string, string> = { buro: 'VIA BURO', direct: 'DIRECT', eqsl: 'eQSL', lotw: 'LoTW', qrz: 'QRZ' };
+const all = await Promise.all(
+  (await getQsl()).map(async (q) => {
+    const d = q.data;
+    return {
+      id: q.id,
+      ...d,
+      band: d.band ?? bandOf(d.freq),
+      dateText: d.date ? ymd(d.date) : undefined,
+      viaText: d.via ? (VIA[d.via.toLowerCase()] ?? d.via) : undefined,
+      front: d.front ? await resolvePic(d.front, q.filePath, d.dither) : null,
+      back: d.back ? await resolvePic(d.back, q.filePath, d.dither) : null,
+    };
+  }),
+);
+type Card = (typeof all)[number];
+const mine = all.filter((c) => c.dir === 'mine');
+const cards = all.filter((c) => c.dir !== 'mine');
+const uniq = (xs: (string | undefined)[]) => [...new Set(xs.filter((x): x is string => !!x))];
+const bands = uniq(cards.map((c) => c.band));
+const modes = uniq(cards.map((c) => c.mode?.toUpperCase()));
+const dxcc = new Map<string, Card[]>();
+for (const c of cards) if (c.dxcc) (dxcc.get(c.dxcc) ?? dxcc.set(c.dxcc, []).get(c.dxcc)!).push(c);
+const summary = [
+  ['CARDS', cards.length],
+  ['DXCC', dxcc.size],
+  ['BANDS', bands.length],
+  ['LATEST', cards.find((c) => c.dateText)?.dateText ?? '—'],
+];
+const hasSent = cards.some((c) => c.dir === 'sent');
+const tones = ['indigo', 'lamp', 'paper'];
+const tone = (id: string) => tones[[...id].reduce((a, ch) => a + ch.charCodeAt(0), 0) % tones.length];
+---
+
+<BaseLayout title="QSL" manCenter="QSL 卡片" manRight="QSL(7)" lightbox>
+  <Section name="NAME" rule={false}>
+    <h1 class="page-title qsl-title">QSL</h1>
+    <p class="page-lede">{me} 收到{hasSent && '和寄出'}的通联确认卡。点卡片可以翻到背面看通联记录。</p>
+  </Section>
+
+  {
+    cards.length > 0 && (
+      <Section name="SUMMARY" rule={false}>
+        <dl class="log-station big">
+          {summary.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
+        <div class="qsl-filter" role="group" aria-label="筛选卡片">
+          <button type="button" class="btn" aria-pressed="true" data-filter="">全部</button>
+          {hasSent && <button type="button" class="btn" aria-pressed="false" data-filter="dir:rcvd">收到 RCVD</button>}
+          {hasSent && <button type="button" class="btn" aria-pressed="false" data-filter="dir:sent">寄出 SENT</button>}
+          {bands.length > 1 && <span class="k">BAND</span>}
+          {bands.length > 1 && bands.map((b) => <button type="button" class="btn sm" aria-pressed="false" data-filter={`band:${b}`}>{b}</button>)}
+          {modes.length > 1 && <span class="k">MODE</span>}
+          {modes.length > 1 && modes.map((m) => <button type="button" class="btn sm" aria-pressed="false" data-filter={`mode:${m}`}>{m}</button>)}
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    mine.length > 0 && (
+      <Section name="MY CARD">
+        {mine.map((c) => (
+          <div class="my-card">
+            <div class="pair">
+              <figure>
+                <div class="qsl-face front">
+                  {c.front ? (
+                    <a href={c.front.original} data-lightbox>
+                      <img src={c.front.src} data-dither-src={c.front.ditherSrc} data-dither-remote={c.front.remote ? '' : undefined} alt={`${c.call} QSL 正面`} loading="lazy" />
+                    </a>
+                  ) : (
+                    <div class="qsl-type indigo"><span class="call">{c.call}</span>{c.grid && <span class="sub">{c.grid}</span>}</div>
+                  )}
+                </div>
+                <figcaption>FRONT</figcaption>
+              </figure>
+              <figure>
+                <div class="qsl-face back">
+                  {c.back ? (
+                    <a href={c.back.original} data-lightbox>
+                      <img src={c.back.src} data-dither-src={c.back.ditherSrc} data-dither-remote={c.back.remote ? '' : undefined} alt={`${c.call} QSL 背面`} loading="lazy" />
+                    </a>
+                  ) : (
+                    <div class="qsl-backside">
+                      <div class="row"><span>CONFIRMING QSO WITH</span><span class="blank" /></div>
+                      <table><thead><tr><th>DATE</th><th>UTC</th><th>MHz</th><th>MODE</th><th>RST</th></tr></thead><tbody><tr><td /><td /><td /><td /><td /></tr></tbody></table>
+                      <div class="row"><span>☐ PSE QSL　☐ TNX QSL</span><span>73 de {site.author.name}</span></div>
+                    </div>
+                  )}
+                </div>
+                <figcaption>BACK</figcaption>
+              </figure>
+            </div>
+            {c.note && <p class="qsl-note">{c.note}</p>}
+          </div>
+        ))}
+      </Section>
+    )
+  }
+
+  {
+    cards.length > 0 && (
+      <Section name="CARDS">
+        <ul class="qsl-grid">
+          {cards.map((c) => (
+            <li class="qsl-item" id={c.id} data-dir={c.dir} data-band={c.band ?? ''} data-mode={c.mode?.toUpperCase() ?? ''}>
+              <button type="button" class="qsl-card" aria-pressed="false" aria-label={`${c.call} 的 QSL 卡，点击翻面`}>
+                <span class="inner">
+                  <span class="qsl-face front">
+                    {c.front ? (
+                      <img src={c.front.src} data-dither-src={c.front.ditherSrc} data-dither-remote={c.front.remote ? '' : undefined} alt="" loading="lazy" />
+                    ) : (
+                      <span class={`qsl-type ${tone(c.id)}`}>
+                        {c.dxcc && <span class="sub">{c.dxcc}</span>}
+                        <span class="call">{c.call}</span>
+                      </span>
+                    )}
+                    <span class="flip-hint">↻ 背面</span>
+                  </span>
+                  <span class="qsl-face back">
+                    {c.back ? (
+                      <img src={c.back.src} data-dither-src={c.back.ditherSrc} data-dither-remote={c.back.remote ? '' : undefined} alt="" loading="lazy" />
+                    ) : (
+                      <span class="qsl-backside">
+                        <span class="row"><span>{c.dir === 'sent' ? `TO ${c.call}` : `TO ${me}`}</span><span>{c.dir === 'sent' ? `FROM ${me}` : `FROM ${c.call}`}</span></span>
+                        <span class="table" role="table" aria-label="通联记录">
+                          <span role="row"><span role="columnheader">DATE</span><span role="columnheader">UTC</span><span role="columnheader">MHz</span><span role="columnheader">MODE</span><span role="columnheader">RST</span></span>
+                          <span role="row"><span role="cell">{c.dateText ?? '—'}</span><span role="cell">{c.utc ?? '—'}</span><span role="cell">{c.freq ?? c.band ?? '—'}</span><span role="cell">{c.mode ?? '—'}</span><span role="cell">{c.rst ?? '—'}</span></span>
+                        </span>
+                        <span class="row"><span>{c.viaText ?? ''}</span><span>TNX QSO · 73</span></span>
+                      </span>
+                    )}
+                    <span class="flip-hint">↻ 正面</span>
+                  </span>
+                </span>
+              </button>
+              <div class="qsl-meta">
+                <span class="call">{c.call}</span>
+                <span class:list={['dir', c.dir]}>{c.dir === 'sent' ? 'SENT' : 'RCVD'}</span>
+              </div>
+              <div class="qsl-sub">
+                {[c.dxcc, c.dateText, c.band, c.mode, c.viaText].filter(Boolean).map((x) => <span>{x}</span>)}
+                {c.front && (
+                  <a class="zoom" href={c.front.original} data-lightbox>
+                    原图
+                    <img hidden src={c.front.ditherSrc ?? c.front.src} data-dither-src={c.front.ditherSrc} alt={`${c.call} QSL`} />
+                  </a>
+                )}
+              </div>
+              {c.note && <p class="qsl-note">{c.note}</p>}
+            </li>
+          ))}
+        </ul>
+        <p class="qsl-empty" hidden>没有符合条件的卡片。</p>
+      </Section>
+    )
+  }
+
+  {
+    dxcc.size > 0 && (
+      <Section name="BY DXCC" rule={false}>
+        <div class="table-scroll">
+          <table class="dxcc-table">
+            <thead><tr><th>ENTITY</th><th>CARDS</th><th>BANDS</th></tr></thead>
+            <tbody>
+              {[...dxcc.entries()].sort((a, b) => b[1].length - a[1].length).map(([k, list]) => (
+                <tr><td>{k}</td><td>{list.length}</td><td>{uniq(list.map((c) => c.band)).join(' · ') || '—'}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    all.length === 0 && (
+      <Section name="DESCRIPTION" rule={false}>
+        <p>还没有卡片。在 <code>src/content/qsl/</code> 下放一个 <code>card.yaml</code> 即可。</p>
+      </Section>
+    )
+  }
+
+  <script>
+    document.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      const card = t.closest<HTMLButtonElement>('.qsl-card');
+      if (card) {
+        card.setAttribute('aria-pressed', String(card.getAttribute('aria-pressed') !== 'true'));
+        return;
+      }
+      const f = t.closest<HTMLButtonElement>('[data-filter]');
+      if (!f) return;
+      const btns = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+      btns.forEach((b) => b.setAttribute('aria-pressed', String(b === f)));
+      const [k, v] = (f.dataset.filter ?? '').split(':');
+      let shown = 0;
+      document.querySelectorAll<HTMLElement>('.qsl-item').forEach((li) => {
+        const ok = !k || li.dataset[k] === v;
+        li.hidden = !ok;
+        if (ok) shown++;
+      });
+      const empty = document.querySelector<HTMLElement>('.qsl-empty');
+      if (empty) empty.hidden = shown > 0;
+    });
+  </script>
+</BaseLayout>

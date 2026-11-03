@@ -6,7 +6,8 @@ import Section from '../components/Section.astro';
 import CommentSection from '../islands/CommentSection';
 import { mdxComponents } from '../components/mdx';
 export async function getStaticPaths() {
-  return (await getCollection('pages')).map((p) => ({ params: { slug: p.id }, props: { p } }));
+  // about 由 /about/ 路由负责（含友链），这里不再重复生成
+  return (await getCollection('pages', (p) => p.id !== 'about')).map((p) => ({ params: { slug: p.id }, props: { p } }));
 }
 const { p } = Astro.props;
 const { Content } = await render(p);

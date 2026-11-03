@@ -1,0 +1,61 @@
+---
+/** 友链：按 group 分组；未填 avatar 时构建期抓取对方站点图标，抓不到显示首字 */
+import { getCollection } from 'astro:content';
+import { getFavicon } from '../node/favicon.js';
+
+const friends = await getCollection('friends');
+const items = await Promise.all(
+  friends.map(async (f) => ({
+    ...f.data,
+    host: new URL(f.data.url).host.replace(/^www\./, ''),
+    icon: f.data.avatar ?? (await getFavicon(f.data.url)),
+  })),
+);
+const groups = new Map<string, typeof items>();
+for (const f of items) (groups.get(f.group) ?? groups.set(f.group, []).get(f.group)!).push(f);
+const multi = groups.size > 1;
+---
+
+{
+  [...groups.entries()].map(([g, list]) => (
+    <div class="friend-group">
+      {multi && (
+        <div class="leader">
+          <span>{g}</span>
+          <span class="dots" />
+          <span class="n">{list.length}</span>
+        </div>
+      )}
+      <ul class="friend-grid">
+        {list.map((f) => (
+          <li class="friend-card">
+            {f.icon ? (
+              <img
+                class="friend-icon"
+                src={f.icon}
+                alt=""
+                width="44"
+                height="44"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                data-letter={[...f.name][0]}
+                onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'friend-icon letter',textContent:this.dataset.letter}))"
+              />
+            ) : (
+              <span class="friend-icon letter" aria-hidden="true">
+                {[...f.name][0]}
+              </span>
+            )}
+            <div>
+              <a class="name" href={f.url} rel="noopener" target="_blank">
+                {f.name}
+              </a>
+              <span class="host">{f.host}</span>
+              {f.desc && <p>{f.desc}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))
+}

@@ -1,0 +1,11 @@
+call: JA1XXX
+dir: rcvd
+date: 2026-10-28
+utc: '0312'
+freq: 14.074
+mode: FT8
+rst: '-12'
+dxcc: 日本
+via: buro
+front: ./front.jpg
+note: 示例卡片；band 由频率自动推算。

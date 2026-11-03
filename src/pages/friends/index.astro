@@ -1,51 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
-import site from '../../config/site';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Section from '../../components/Section.astro';
-import CommentSection from '../../islands/CommentSection';
-const friends = await getCollection('friends');
-const groups = new Map<string, typeof friends>();
-for (const f of friends) (groups.get(f.data.group) ?? groups.set(f.data.group, []).get(f.data.group)!).push(f);
-const info = { 名称: site.title, 地址: site.url, 介绍: site.description };
+/** 友链已并入关于页；保留旧地址做跳转，外部链接不失效 */
+const to = '/about/#friends';
 ---
 
-<BaseLayout title="友链" manCenter="FRIENDS" manRight="FRIENDS(7)">
-  <Section name="FRIENDS" rule={false}>
-    <h1 class="page-title">友链</h1>
-  </Section>
-  {
-    [...groups.entries()].map(([g, list]) => (
-      <Section name={g}>
-        <ul class="friend-grid">
-          {list.map((f) => (
-            <li class="friend-card">
-              <div class="avatar" aria-hidden="true">{f.data.name[0]}</div>
-              <div>
-                <h3><a href={f.data.url} rel="noopener" target="_blank">{f.data.name}</a></h3>
-                <p>{f.data.desc}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </Section>
-    ))
-  }
-  <Section name="APPLY" narrow>
-    <p style="margin-top:0">欢迎交换友链。请在下方留言簿里留下你的站点信息；本站信息如下：</p>
-    <dl class="meta-grid" style="grid-template-columns:1fr">
-      {Object.entries(info).map(([k, v]) => (
-        <div><dt>{k}</dt><dd>{v} <button type="button" class="btn" style="min-height:28px;font-size:12px" data-copy-text={v}>复制</button></dd></div>
-      ))}
-    </dl>
-  </Section>
-  <Section name="GUESTBOOK" rule={false} narrow>
-    <CommentSection client:visible server={site.artalk.server} site={site.artalk.site} pageKey="/friends/" pageTitle="友链" />
-  </Section>
-  <script>
-    document.addEventListener('click', (e) => {
-      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-copy-text]');
-      if (b) navigator.clipboard?.writeText(b.dataset.copyText ?? '');
-    });
-  </script>
-</BaseLayout>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>友链</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={to} />
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+  </head>
+  <body>
+    <p>友链已移到 <a href={to}>关于页</a>。</p>
+  </body>
+</html>

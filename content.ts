@@ -31,11 +31,89 @@ const posts = defineCollection({
     }),
 });
 
+/** 图片：相对当前文件的路径（构建期抖动），或图床 URL（浏览器端抖动） */
+const pic = z.union([z.string(), z.object({ src: z.string(), caption: z.string().optional() })]);
+
 const notes = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/notes' }),
   schema: z.object({
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
+    /** 地点（日志表头 QTH 栏） */
+    qth: z.string().optional(),
+    /** 天气（日志表头 WX 栏） */
+    wx: z.string().optional(),
+    /** 0 / 1 / 2 / 3+ 张分别套用不同的图文版式 */
+    images: z.array(pic).default([]),
+    dither: z.boolean().default(true),
+  }),
+});
+
+/** 关于页：src/content/about/index.md，版式由 frontmatter 决定，正文进照片旁的文字框 */
+const about = defineCollection({
+  loader: glob({ pattern: 'index.{md,mdx}', base: './src/content/about' }),
+  schema: z.object({
+    title: z.string().default('关于'),
+    description: z.string().optional(),
+    /** 首页导航里的入口；false 则不显示 */
+    nav: z.union([z.object({ label: z.string(), order: z.number() }), z.literal(false)]).default({ label: '关于', order: 10 }),
+    /** NAME 段下面的一行副标题 */
+    tagline: z.string().optional(),
+    photo: z.string().optional(),
+    photoSide: z.enum(['left', 'right']).default('left'),
+    photoCaption: z.string().optional(),
+    photoAlt: z.string().default(''),
+    /** 文字框里的大号问候语 */
+    greeting: z.string().optional(),
+    /** 文字框下方的信息表：键为栏名，值为文字，或 { text, href } */
+    facts: z.record(z.string(), z.union([z.string(), z.object({ text: z.string(), href: z.string() })])).default({}),
+    history: z
+      .array(z.object({ year: z.union([z.string(), z.number()]), text: z.string() }))
+      .default([]),
+    historyPhoto: z.string().optional(),
+    historyCaption: z.string().optional(),
+    /** NOW 段：在做 / 在读 …… */
+    now: z.record(z.string(), z.string()).default({}),
+    /** 友链段开头的一句话 */
+    friendsIntro: z.string().default('常去的几个站。头像取自对方站点图标。'),
+    comments: z.boolean().default(false),
+    dither: z.boolean().default(true),
+  }),
+});
+
+/** QSL 卡：src/content/qsl/<任意名>/card.yaml（图片放同目录），或 src/content/qsl/<名>.yaml */
+const qsl = defineCollection({
+  loader: glob({
+    pattern: '**/*.{yaml,yml}',
+    base: './src/content/qsl',
+    generateId: ({ entry }) => {
+      const parts = entry.replace(/\.ya?ml$/, '').split('/');
+      if (parts.length > 1 && /^(card|index|qsl)$/.test(parts.at(-1)!)) parts.pop();
+      return parts.join('-').toLowerCase();
+    },
+  }),
+  schema: z.object({
+    call: z.string(),
+    /** rcvd 收到 / sent 寄出 / mine 本台卡片 */
+    dir: z.enum(['rcvd', 'sent', 'mine']).default('rcvd'),
+    date: z.coerce.date().optional(),
+    utc: z.coerce.string().optional(),
+    /** MHz */
+    freq: z.coerce.string().optional(),
+    /** 缺省时按 freq 推算 */
+    band: z.string().optional(),
+    mode: z.string().optional(),
+    rst: z.coerce.string().optional(),
+    dxcc: z.string().optional(),
+    qth: z.string().optional(),
+    grid: z.string().optional(),
+    /** buro / direct / eqsl / lotw …… */
+    via: z.string().optional(),
+    front: z.string().optional(),
+    /** 缺省时用通联记录生成背面 */
+    back: z.string().optional(),
+    note: z.string().optional(),
+    dither: z.boolean().default(true),
   }),
 });
 
@@ -84,4 +162,4 @@ const friends = defineCollection({
   }),
 });
 
-export const collections = { posts, notes, projects, pages, home, friends };
+export const collections = { posts, notes, projects, pages, home, friends, about, qsl };

@@ -1,5 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { parse as parseYaml } from 'yaml';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
@@ -49,7 +51,9 @@ const ROUTES = [
   ['/notes', 'notes/index.astro'],
   ['/projects', 'projects/index.astro'],
   ['/projects/[slug]', 'projects/[slug].astro'],
+  ['/about', 'about/index.astro'],
   ['/friends', 'friends/index.astro'],
+  ['/qsl', 'qsl/index.astro'],
   ['/guestbook', 'guestbook/index.astro'],
   ['/search', 'search/index.astro'],
   ['/rss.xml', 'rss.xml.ts'],
@@ -65,9 +69,10 @@ const ROUTES = [
  *
  * 返回 { integrations, markdown, vite }，三者都需要传给 defineConfig。
  * 博客自己的 src/pages 里的同名路由会优先于主题路由。
+ * site 可以是对象，也可以是 YAML 文件路径（相对项目根），如 section7('site.yaml')。
  */
 export default function section7(userSite = {}) {
-  const site = mergeSite(userSite);
+  const site = mergeSite(typeof userSite === 'string' ? loadSite(userSite) : userSite);
 
   const theme = {
     name: 'section7-theme',
@@ -123,6 +128,11 @@ export default function section7(userSite = {}) {
       }),
     },
   };
+}
+
+/** 读取 YAML 站点配置（相对当前工作目录，即博客根目录） */
+export function loadSite(path = 'site.yaml') {
+  return parseYaml(readFileSync(resolve(process.cwd(), path), 'utf8')) ?? {};
 }
 
 /** 类型辅助，无运行时作用 */

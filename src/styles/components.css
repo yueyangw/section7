@@ -244,41 +244,6 @@
   color: var(--ink-2);
 }
 
-/* 友链 */
-.friend-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.friend-card {
-  display: flex;
-  gap: 14px;
-  padding: 14px 16px;
-  background: var(--card);
-  border: 1px solid var(--ink);
-  box-shadow: 3px 3px 0 var(--rule);
-}
-.friend-card .avatar {
-  flex: 0 0 56px;
-  width: 56px;
-  height: 56px;
-  font-size: 26px;
-}
-.friend-card h3 {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 16px;
-}
-.friend-card p {
-  margin: 2px 0 0;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--ink-2);
-}
-
 /* 404 */
 .nomanual {
   font-family: var(--font-mono);

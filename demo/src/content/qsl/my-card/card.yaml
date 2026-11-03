@@ -1,0 +1,6 @@
+# 本台卡片：dir: mine 显示在 MY CARD 段；没有 back 时生成空白通联表
+call: N0CALL
+dir: mine
+grid: PM95
+front: ./front.png
+note: 想要一张？通联后在留言簿说一声。

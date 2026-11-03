@@ -1,0 +1,153 @@
+---
+import { getEntry, render } from 'astro:content';
+import site from '../../config/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/Section.astro';
+import Pic from '../../components/Pic.astro';
+import FriendList from '../../components/FriendList.astro';
+import CommentSection from '../../islands/CommentSection';
+import { mdxComponents } from '../../components/mdx';
+import { getAbout, getQsl } from '../../lib/content';
+import { resolvePic } from '../../lib/images';
+
+const about = await getAbout();
+// 兼容旧写法：没有 src/content/about/ 时沿用 pages/about.md 作为正文
+const legacy = about ? undefined : await getEntry('pages', 'about');
+const entry = about ?? legacy;
+const Content = entry ? (await render(entry)).Content : null;
+const d = about?.data;
+const photo = d?.photo ? await resolvePic(d.photo, about!.filePath, d.dither) : null;
+const historyPhoto = d?.historyPhoto ? await resolvePic(d.historyPhoto, about!.filePath, d.dither) : null;
+const facts = Object.entries(d?.facts ?? {}).map(([k, v]) => (typeof v === 'string' ? { k, text: v } : { k, ...v }));
+const now = Object.entries(d?.now ?? {});
+const title = d?.title ?? legacy?.data.title ?? '关于';
+const hasQsl = (await getQsl()).length > 0;
+const seeAlso = [
+  { label: 'notes', section: 7, href: '/notes/' },
+  ...(hasQsl ? [{ label: 'qsl', section: 7, href: '/qsl/' }] : []),
+  { label: 'guestbook', section: 7, href: '/guestbook/' },
+  ...(site.author.github ? [{ label: 'github', section: 1, href: `https://github.com/${site.author.github}` }] : []),
+];
+const info = `${site.title} · ${site.url} · ${site.description}`;
+---
+
+<BaseLayout title={title} description={d?.description ?? legacy?.data.description} manCenter={title} manRight="ABOUT(7)" lightbox>
+  <Section name="NAME" rule={false}>
+    <h1 class="page-title">{title}</h1>
+    {d?.tagline && <p class="page-tagline">{d.tagline}</p>}
+  </Section>
+
+  <Section name="DESCRIPTION" rule={false}>
+    <div class:list={['profile', `photo-${d?.photoSide ?? 'left'}`, { 'no-photo': !photo }]}>
+      {
+        photo && (
+          <figure class="profile-photo">
+            <div class="frame">
+              <Pic pic={photo} alt={d!.photoAlt} />
+            </div>
+            <figcaption>
+              <span>FIG.1</span>
+              {d!.photoCaption && <span>{d!.photoCaption}</span>}
+            </figcaption>
+          </figure>
+        )
+      }
+      <div class="profile-main">
+        <div class="textbox">
+          <div class="textbox-head"><span>HELLO, WORLD</span><span>whoami</span></div>
+          {d?.greeting && <p class="greeting">{d.greeting}</p>}
+          {Content && <div class="prose"><Content components={mdxComponents} /></div>}
+        </div>
+        {
+          facts.length > 0 && (
+            <dl class="facts">
+              {facts.map((f) => (
+                <>
+                  <dt>{f.k}</dt>
+                  <dd>{'href' in f && f.href ? <a href={f.href}>{f.text}</a> : f.text}</dd>
+                </>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+    </div>
+  </Section>
+
+  {
+    d && d.history.length > 0 && (
+      <Section name="HISTORY">
+        <div class="history">
+          <ol>
+            {d.history.map((h) => (
+              <li>
+                <span class="year">{h.year}</span>
+                <p>{h.text}</p>
+              </li>
+            ))}
+          </ol>
+          {historyPhoto && (
+            <figure class="history-photo">
+              <Pic pic={historyPhoto} alt={d.historyCaption ?? ''} />
+              <figcaption>FIG.2{d.historyCaption && ` · ${d.historyCaption}`}</figcaption>
+            </figure>
+          )}
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    now.length > 0 && (
+      <Section name="NOW">
+        <ul class="now-grid">
+          {now.map(([k, v]) => (
+            <li>
+              <span class="k">{k}</span>
+              <span class="v">{v}</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  <Section name="FRIENDS" id="friends">
+    <div class="friends">
+      <p class="friends-intro">{d?.friendsIntro ?? '常去的几个站。头像取自对方站点图标。'}</p>
+      <FriendList />
+      <div class="friend-apply">
+        <span class="k">交换友链</span>
+        <span class="v">{info}</span>
+        <button type="button" class="btn" data-copy-text={info}>复制本站信息</button>
+        <a class="btn btn-primary" href="/guestbook/">去留言簿申请 →</a>
+      </div>
+    </div>
+  </Section>
+
+  {
+    d?.comments && (
+      <Section name="GUESTBOOK" narrow>
+        <CommentSection client:visible server={site.artalk.server} site={site.artalk.site} pageKey="/about/" pageTitle={title} />
+      </Section>
+    )
+  }
+
+  <Section name="SEE ALSO" rule={false}>
+    <p class="see-also">
+      {seeAlso.map((s, i) => <>{i > 0 && ', '}<a href={s.href}>{s.label}</a>({s.section})</>)}
+    </p>
+  </Section>
+
+  <script>
+    document.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-copy-text]');
+      if (!b) return;
+      navigator.clipboard?.writeText(b.dataset.copyText ?? '').then(() => {
+        const old = b.textContent;
+        b.textContent = '已复制';
+        setTimeout(() => (b.textContent = old), 1500);
+      });
+    });
+  </script>
+</BaseLayout>

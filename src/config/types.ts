@@ -16,7 +16,15 @@ export interface SiteConfig {
   /** 页眉页脚使用，(7) 自动追加 */
   manName: string;
   description: string;
-  author: { name: string; email: string; github: string };
+  author: {
+    name: string;
+    email: string;
+    github: string;
+    /** 头像：相对博客根目录的路径或 URL；用于首页 ABOUT */
+    avatar: string | null;
+    /** 业余无线电呼号；用于日志页与 QSL 页 */
+    callsign: string;
+  };
   /** 文章距今不超过该天数则显示 NEW! */
   newDays: number;
   timezone: string;
@@ -25,7 +33,13 @@ export interface SiteConfig {
   nav: NavItem[];
   /** 首页 SEE ALSO */
   seeAlso: { label: string; section: number; href: string }[];
-  home: { logCount: number; noteCount: number; banner: boolean };
+  /**
+   * banner：true 用主题内置的蓝调时刻图，false 不显示，
+   * 或 { src, caption, alt } 用自己的图（src 相对博客根目录或 URL，会被抖动）
+   */
+  home: { logCount: number; noteCount: number; banner: boolean | { src: string; caption?: string; alt?: string } };
+  /** QSL 页：有卡片时自动出现在导航里 */
+  qsl: { navLabel: string; navOrder: number };
   dither: {
     algorithm: 'atkinson' | 'floyd-steinberg' | 'bayer';
     ink: string;

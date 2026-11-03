@@ -322,3 +322,11 @@ a.type-tag.solid:visited {
     scroll-behavior: auto !important;
   }
 }
+
+/* 远程图片：浏览器端抖动（src/client/dither.ts）完成前、或图床拒绝跨域时，用 SVG 双色滤镜兜底 */
+img[data-dither-remote]:not([data-dither-state='done']) {
+  filter: url(#s7-duotone);
+}
+img[data-dither-remote][data-dither-state='done'] {
+  image-rendering: pixelated;
+}

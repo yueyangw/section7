@@ -1,0 +1,33 @@
+---
+/** 一张可点开灯箱的图片；pic 由 lib/images.ts 的 resolvePic 产出 */
+import type { Pic } from '../lib/images';
+interface Props {
+  pic: Pic;
+  alt?: string;
+  class?: string;
+  lightbox?: boolean;
+  loading?: 'lazy' | 'eager';
+}
+const { pic, alt = '', class: cls, lightbox = true, loading = 'lazy' } = Astro.props;
+const img = {
+  src: pic.src,
+  alt,
+  width: pic.width,
+  height: pic.height,
+  loading,
+  decoding: 'async' as const,
+  'data-dither-src': pic.ditherSrc,
+  'data-original-src': pic.original,
+  'data-dither-remote': pic.remote ? '' : undefined,
+};
+---
+
+{
+  lightbox ? (
+    <a class:list={['pic', { dither: pic.dithered }, cls]} href={pic.original} data-lightbox>
+      <img {...img} />
+    </a>
+  ) : (
+    <img class:list={['pic', { dither: pic.dithered }, cls]} {...img} />
+  )
+}

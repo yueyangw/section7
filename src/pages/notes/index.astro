@@ -1,22 +1,111 @@
 ---
+/** 日志：按月分页（SHEET），每条按通联日志的表头记录；图片 0 / 1 / 2 / 3+ 张分别套用不同版式 */
 import { render } from 'astro:content';
+import site from '../../config/site';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/Section.astro';
+import Pic from '../../components/Pic.astro';
 import { getNotes } from '../../lib/content';
 import { ymdHm } from '../../lib/date';
-const notes = await Promise.all((await getNotes()).map(async (n) => ({ n, C: (await render(n)).Content })));
+import { resolvePic, type Pic as PicT } from '../../lib/images';
+
+const notes = await getNotes();
+const total = notes.length;
+const rows = await Promise.all(
+  notes.map(async (n, i) => {
+    const [date, time] = ymdHm(n.data.date).split(' ');
+    const imgs = (n.data.images ?? []).map((x) => (typeof x === 'string' ? { src: x } : x));
+    const pics: (PicT & { caption?: string })[] = await Promise.all(
+      imgs.map(async (x) => ({ ...(await resolvePic(x.src, n.filePath, n.data.dither ?? true)), caption: x.caption })),
+    );
+    return { n, C: (await render(n)).Content, nr: String(total - i).padStart(3, '0'), date, time, month: date.slice(0, 7), pics };
+  }),
+);
+const months = new Map<string, typeof rows>();
+for (const r of rows) (months.get(r.month) ?? months.set(r.month, []).get(r.month)!).push(r);
+const layout = (k: number) => (k === 0 ? 'att-0' : k === 1 ? 'att-1' : k === 2 ? 'att-2' : 'att-many');
+const MOSAIC = 3;
+const station = [
+  ['STATION', site.author.callsign || site.manName],
+  ['OPERATOR', site.author.name],
+  ['ENTRIES', String(total)],
+  ['SINCE', rows.at(-1)?.month ?? '—'],
+];
 ---
 
-<BaseLayout title="笔记" manCenter="NOTES" lightbox>
-  <Section name="NOTES" rule={false}>
-    <h1 class="page-title" style="margin-bottom:24px">笔记</h1>
-    <ul class="notes-list">
-      {notes.map(({ n, C }) => (
-        <li id={n.id}>
-          <time datetime={n.data.date.toISOString()}><a href={`#${n.id}`} style="color:inherit">{ymdHm(n.data.date)}</a></time>
-          <div class="note-body prose"><C /></div>
-        </li>
-      ))}
-    </ul>
+<BaseLayout title="日志" manCenter="日志" manRight="LOG(7)" lightbox>
+  <Section name="NAME" rule={false}>
+    <h1 class="page-title">日志</h1>
+    <p class="page-lede">日常的短记录，一条一行，照着通联日志的样子记。</p>
   </Section>
+
+  <Section name="STATION" rule={false}>
+    <dl class="log-station">
+      {station.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+    </dl>
+    {
+      months.size > 1 && (
+        <nav class="sheet-nav" aria-label="按月份">
+          <span class="k">SHEET</span>
+          {[...months.keys()].map((m) => <a class="btn" href={`#sheet-${m}`}>{m}</a>)}
+        </nav>
+      )
+    }
+  </Section>
+
+  {
+    [...months.entries()].map(([m, list]) => (
+      <Section name={m} id={`sheet-${m}`}>
+        <ol class="qso-list">
+          {list.map(({ n, C, nr, date, time, pics }) => (
+            <li class={`qso ${layout(pics.length)}`} id={n.id}>
+              <dl class="qso-head">
+                <div><dt>NR</dt><dd class="nr"><a href={`#${n.id}`}>{nr}</a></dd></div>
+                <div><dt>DATE</dt><dd><time datetime={n.data.date.toISOString()}>{date.slice(5)}</time></dd></div>
+                <div><dt>TIME</dt><dd>{time}</dd></div>
+                <div><dt>QTH</dt><dd>{n.data.qth ?? '—'}</dd></div>
+                <div><dt>WX</dt><dd>{n.data.wx ?? '—'}</dd></div>
+                <div><dt>ATT</dt><dd>{pics.length}</dd></div>
+              </dl>
+              <div class="qso-body">
+                <div class="qso-text">
+                  <span class="k">RMKS</span>
+                  <div class="prose note-body"><C /></div>
+                  {(n.data.tags ?? []).length > 0 && <p class="qso-tags">{n.data.tags.map((t) => `#${t}`).join(' ')}</p>}
+                </div>
+                {pics.length === 1 && (
+                  <figure class="qso-att">
+                    <Pic pic={pics[0]} alt={pics[0].caption ?? ''} />
+                    <figcaption><span>ATT.1</span>{pics[0].caption && <span>{pics[0].caption}</span>}</figcaption>
+                  </figure>
+                )}
+                {pics.length === 2 && (
+                  <div class="qso-pair">
+                    {pics.map((p, i) => (
+                      <figure class="qso-att">
+                        <Pic pic={p} alt={p.caption ?? ''} />
+                        <figcaption>ATT.{i + 1}{p.caption && ` · ${p.caption}`}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                )}
+                {pics.length > 2 && (
+                  <div class="qso-mosaic">
+                    {pics.map((p, i) => (
+                      <div class:list={['cell', { main: i === 0, hidden: i >= MOSAIC }]}>
+                        <Pic pic={p} alt={p.caption ?? `附件 ${i + 1}`} />
+                        {i === MOSAIC - 1 && pics.length > MOSAIC && (
+                          <span class="more" aria-hidden="true">+{pics.length - MOSAIC}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </Section>
+    ))
+  }
 </BaseLayout>
