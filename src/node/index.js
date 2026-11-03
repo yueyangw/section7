@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
-import { readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { parse as parseYaml } from 'yaml';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
@@ -40,6 +41,23 @@ const langTransformer = {
     node.properties['data-language'] = this.options.lang;
   },
 };
+
+/**
+ * Astro 的内容缓存（data-store.json）只按内容文件判断是否过期，主题的 Markdown 插件变了也会沿用旧 HTML。
+ * 这里对主题构建代码与相关配置取指纹，变化时删掉缓存让 Astro 重新渲染。
+ */
+function invalidateContentCache(root, site) {
+  const h = createHash('sha1');
+  for (const f of readdirSync(here('./')).sort()) h.update(f).update(readFileSync(here(`./${f}`)));
+  h.update(readFileSync(resolve(PKG, 'content.ts')));
+  h.update(JSON.stringify({ dither: site.dither, math: site.math }));
+  const sig = h.digest('hex');
+  const mark = resolve(root, '.cache/section7-build.txt');
+  if (existsSync(mark) && readFileSync(mark, 'utf8') === sig) return;
+  for (const f of ['node_modules/.astro/data-store.json', '.astro/data-store.json']) rmSync(resolve(root, f), { force: true });
+  mkdirSync(resolve(root, '.cache'), { recursive: true });
+  writeFileSync(mark, sig);
+}
 
 const ROUTES = [
   ['/', 'index.astro'],
@@ -83,6 +101,7 @@ export default function section7(userSite = {}) {
     name: 'section7-theme',
     hooks: {
       'astro:config:setup': ({ injectRoute, injectScript, config }) => {
+        invalidateContentCache(fileURLToPath(config.root), site);
         for (const [pattern, file] of ROUTES) {
           injectRoute({ pattern, entrypoint: resolve(PKG, 'src/pages', file), prerender: true });
         }

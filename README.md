@@ -10,7 +10,7 @@
 - 数学：构建期 MathJax → SVG，支持 `align`/`\tag`/`\eqref`/`\newcommand`/mhchem；公式出错构建即失败，并给出文件、行号和 TeX 源码
 - 图片默认抖动成双色（Atkinson / Floyd-Steinberg / Bayer），点击灯箱看原图；可整篇或单张关闭。本地图构建期抖动，图床图片在浏览器端用同一算法实时抖动
 - Shiki 代码块（标题栏、复制、diff、终端深色底）、提示框、折叠块、三线表、脚注
-- 首页 / 归档 / 类型 / 标签 / 日志 / 项目 / 关于（含友链）/ QSL 卡片墙 / 留言簿 / 自定义页面 / 404
+- 首页 / 归档 / 类型 / 标签 / 笔记 / 项目 / 关于（含友链）/ QSL 卡片墙 / 留言簿 / 自定义页面 / 404
 - 主题与内容分离：博客仓库只放 Markdown、YAML 和图片，升级主题只需 `pnpm up section7-theme`
 - NEW 标签、文内目录、系列文章、阅读进度、Pagefind 中文搜索、RSS、`llms.txt`、`.md` 原文、sitemap、JSON-LD
 - Artalk 评论 / 阅读量（可选）
@@ -63,7 +63,7 @@ home:
 | 路径 | 页面 | 说明 |
 | --- | --- | --- |
 | `content/posts/**/index.md` | 文章 | 可按 年/月/日 嵌套目录 |
-| `content/notes/*.md` | `/notes/` 日志 | 通联日志式排版；frontmatter `qth` `wx` `images`（0 / 1 / 2 / 3+ 张各有版式） |
+| `content/notes/*.md` | `/notes/` 笔记 | 通联日志式排版；frontmatter `qth` `wx` `images`（0 / 1 / 2 / 3+ 张各有版式） |
 | `content/about/index.md` | `/about/` 关于 | `photo` `photoSide` `greeting` `facts` `history` `now` 控制版式，正文进照片旁的文字框；友链接在下面 |
 | `data/friends.yaml` | 关于页 FRIENDS | `avatar` 可省略，构建期自动抓对方站点图标 |
 | `content/qsl/<名>/card.yaml` | `/qsl/` QSL | `call` `dir`(rcvd/sent/mine) `date` `utc` `freq` `mode` `rst` `dxcc` `via` `front` `back`；无 `back` 时按记录生成背面 |
@@ -91,7 +91,8 @@ pnpm lint
 - 图片抖动结果缓存在博客仓库的 `.cache/`；关闭：frontmatter `dither: false`，或图片 title 加 `#nodither`。
 - 图床图片：浏览器端读取像素需要图床允许跨域（CORS），不允许时退回 SVG 双色滤镜，不会破图。
 - 友链图标缓存在 `.cache/favicons.json`（成功 30 天、失败 1 天后重试）；`SECTION7_OFFLINE=1` 时只用缓存不联网。
-- 升级主题后若内容字段读不到，删掉博客仓库的 `.astro/` 让 Astro 重建内容缓存。
+- 主题的构建代码或图片、公式配置变化时，会自动清掉 Astro 的内容缓存重新渲染（指纹记在 `.cache/section7-build.txt`）。
+- Markdown 里手写的 `<img>`（如 Typora 导出）只要单独成段，也会和 `![]()` 一样处理。
 - 代码块：`title="文件名"`，`// [!code ++]` / `// [!code --]` / `// [!code highlight]`。
 - 提示框：`:::note` `:::tip` `:::warning` `:::danger`（可带 `[标题]`），折叠块 `:::details[标题]`。
 - 迁移过渡期可用 `MATH_STRICT=0` 把公式错误降级为警告。

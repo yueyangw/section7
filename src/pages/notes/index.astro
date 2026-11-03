@@ -1,5 +1,5 @@
 ---
-/** 日志：按月分页（SHEET），每条按通联日志的表头记录；图片 0 / 1 / 2 / 3+ 张分别套用不同版式 */
+/** 笔记：按月分页（SHEET），每条按通联日志的表头记录；图片 0 / 1 / 2 / 3+ 张分别套用不同版式 */
 import { render } from 'astro:content';
 import site from '../../config/site';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -33,10 +33,9 @@ const station = [
 ];
 ---
 
-<BaseLayout title="日志" manCenter="日志" manRight="LOG(7)" lightbox>
+<BaseLayout title="笔记" manCenter="笔记" manRight="NOTES(7)" lightbox>
   <Section name="NAME" rule={false}>
-    <h1 class="page-title">日志</h1>
-    <p class="page-lede">日常的短记录，一条一行，照着通联日志的样子记。</p>
+    <h1 class="page-title">笔记</h1>
   </Section>
 
   <Section name="STATION" rule={false}>

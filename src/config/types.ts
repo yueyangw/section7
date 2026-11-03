@@ -22,7 +22,7 @@ export interface SiteConfig {
     github: string;
     /** 头像：相对博客根目录的路径或 URL；用于首页 ABOUT */
     avatar: string | null;
-    /** 业余无线电呼号；用于日志页与 QSL 页 */
+    /** 业余无线电呼号；用于笔记页与 QSL 页 */
     callsign: string;
   };
   /** 文章距今不超过该天数则显示 NEW! */

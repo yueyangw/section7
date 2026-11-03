@@ -75,7 +75,7 @@ const about = defineCollection({
     /** NOW 段：在做 / 在读 …… */
     now: z.record(z.string(), z.string()).default({}),
     /** 友链段开头的一句话 */
-    friendsIntro: z.string().default('常去的几个站。头像取自对方站点图标。'),
+    friendsIntro: z.string().optional(),
     comments: z.boolean().default(false),
     dither: z.boolean().default(true),
   }),

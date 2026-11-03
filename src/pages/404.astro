@@ -1,21 +1,43 @@
 ---
+import site from '../config/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import PostTable from '../components/PostTable.astro';
 import { getPosts } from '../lib/content';
 const recent = (await getPosts()).slice(0, 5);
+const host = new URL(site.url).host;
 ---
 
-<BaseLayout title="404" manCenter="404" noindex>
-  <Section name="ERROR" rule={false}>
-    <p class="nomanual">No manual entry for <span id="path">this page</span></p>
-    <p><button type="button" class="btn btn-primary" data-open-search>/ 搜索</button> <a class="btn" href="/">回到首页</a></p>
+<BaseLayout title="404" manCenter="404 Not Found" manRight="ERRNO(3)" noindex>
+  <Section name="NAME" rule={false}>
+    <h1 class="err-code">404</h1>
+    <p class="nomanual">No manual entry for <span data-path>this page</span></p>
   </Section>
-  <Section name="SEE ALSO" rule={false}>
-    <PostTable posts={recent} />
+
+  <Section name="SYNOPSIS" rule={false} tight>
+    <div class="err-term" role="presentation">
+      <div class="bar"><span>tty1</span><span>{host}</span></div>
+      <pre><span class="ps">$</span> man {host}<span data-path></span>
+No manual entry for <span data-path></span>
+<span class="ps">$</span> echo $?
+404
+<span class="ps">$</span> <span class="cursor" aria-hidden="true">█</span></pre>
+    </div>
+    <p class="err-actions">
+      <button type="button" class="btn btn-primary" data-open-search aria-keyshortcuts="/">/ 搜索</button>
+      <a class="btn" href="/">回到首页</a>
+      <a class="btn" href="/posts/">文章归档</a>
+    </p>
   </Section>
+
+  {
+    recent.length > 0 && (
+      <Section name="SEE ALSO" rule={false}>
+        <PostTable posts={recent} />
+      </Section>
+    )
+  }
   <script>
-    const el = document.getElementById('path');
-    if (el) el.textContent = location.pathname;
+    document.querySelectorAll('[data-path]').forEach((el) => (el.textContent = decodeURI(location.pathname)));
   </script>
 </BaseLayout>

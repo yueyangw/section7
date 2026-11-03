@@ -45,7 +45,6 @@ const tone = (id: string) => tones[[...id].reduce((a, ch) => a + ch.charCodeAt(0
 <BaseLayout title="QSL" manCenter="QSL 卡片" manRight="QSL(7)" lightbox>
   <Section name="NAME" rule={false}>
     <h1 class="page-title qsl-title">QSL</h1>
-    <p class="page-lede">{me} 收到{hasSent && '和寄出'}的通联确认卡。点卡片可以翻到背面看通联记录。</p>
   </Section>
 
   {
@@ -187,7 +186,7 @@ const tone = (id: string) => tones[[...id].reduce((a, ch) => a + ch.charCodeAt(0
   {
     all.length === 0 && (
       <Section name="DESCRIPTION" rule={false}>
-        <p>还没有卡片。在 <code>src/content/qsl/</code> 下放一个 <code>card.yaml</code> 即可。</p>
+        <p>还没有卡片。</p>
       </Section>
     )
   }

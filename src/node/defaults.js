@@ -13,7 +13,7 @@ export const defaultSite = {
   repo: null,
   nav: [
     { label: '文章', href: '/posts/' },
-    { label: '日志', href: '/notes/' },
+    { label: '笔记', href: '/notes/' },
     { label: '项目', href: '/projects/' },
     { label: '留言簿', href: '/guestbook/' },
   ],

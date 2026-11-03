@@ -16,7 +16,9 @@ const legacy = about ? undefined : await getEntry('pages', 'about');
 const entry = about ?? legacy;
 const Content = entry ? (await render(entry)).Content : null;
 const d = about?.data;
-const photo = d?.photo ? await resolvePic(d.photo, about!.filePath, d.dither) : null;
+// 没写 photo 时用站点头像（site.author.avatar）
+const photoSrc = d?.photo ?? site.author.avatar;
+const photo = photoSrc ? await resolvePic(photoSrc, d?.photo ? about!.filePath : undefined, d?.dither ?? true) : null;
 const historyPhoto = d?.historyPhoto ? await resolvePic(d.historyPhoto, about!.filePath, d.dither) : null;
 const facts = Object.entries(d?.facts ?? {}).map(([k, v]) => (typeof v === 'string' ? { k, text: v } : { k, ...v }));
 const now = Object.entries(d?.now ?? {});
@@ -43,11 +45,11 @@ const info = `${site.title} · ${site.url} · ${site.description}`;
         photo && (
           <figure class="profile-photo">
             <div class="frame">
-              <Pic pic={photo} alt={d!.photoAlt} />
+              <Pic pic={photo} alt={d?.photoAlt ?? site.author.name} />
             </div>
             <figcaption>
               <span>FIG.1</span>
-              {d!.photoCaption && <span>{d!.photoCaption}</span>}
+              {d?.photoCaption && <span>{d.photoCaption}</span>}
             </figcaption>
           </figure>
         )
@@ -114,7 +116,7 @@ const info = `${site.title} · ${site.url} · ${site.description}`;
 
   <Section name="FRIENDS" id="friends">
     <div class="friends">
-      <p class="friends-intro">{d?.friendsIntro ?? '常去的几个站。头像取自对方站点图标。'}</p>
+      {d?.friendsIntro && <p class="friends-intro">{d.friendsIntro}</p>}
       <FriendList />
       <div class="friend-apply">
         <span class="k">交换友链</span>

@@ -1,6 +1,7 @@
 import { dirname, resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { visit } from 'unist-util-visit';
+import { fromHtml } from 'hast-util-from-html';
 import { processImage } from './dither.js';
 const SKIP_EXT = /\.(gif|svg)$/i;
 const isHttp = (s) => /^(https?:)?\/\//.test(s);
@@ -32,6 +33,17 @@ function rehypeImages(options) {
     const fm = file.data.astro?.frontmatter ?? {};
     const wholeOff = fm.dither === false;
     const jobs = [];
+    // Markdown 里直接写的 <img …>（Typora 常见）是 raw 节点：只由 img/br 组成时解析成元素，与 ![]() 一样处理
+    visit(tree, 'raw', (node, index, parent) => {
+      if (!parent || index == null || !/<img\b/i.test(node.value)) return;
+      if (node.value.replace(/<img\b[^>]*>|<br\s*\/?>/gi, '').trim()) {
+        // 与其他标签混写（如 <div align="center"><img …></div>）时不改结构，只给远程图打上浏览器端抖动标记
+        if (!wholeOff) node.value = node.value.replace(/<img\b(?=[^>]*\ssrc\s*=\s*["']?(?:https?:)?\/\/)(?![^>]*#nodither)/gi, '<img data-dither-remote');
+        return;
+      }
+      parent.children.splice(index, 1, ...fromHtml(node.value, { fragment: true }).children);
+      return index;
+    });
     visit(tree, 'element', (node, index, parent) => {
       if (node.tagName !== 'img' || !parent || index == null || !file.path) return;
       if (parent.type === 'element' && parent.tagName === 'a' && parent.properties?.['dataLightbox'] !== void 0) return;
@@ -46,7 +58,15 @@ function rehypeImages(options) {
         const img = {
           type: 'element',
           tagName: 'img',
-          properties: { src: srcRaw, alt, loading: 'lazy', decoding: 'async', ...(noDither ? {} : { 'data-dither-remote': '' }) },
+          properties: {
+            src: srcRaw,
+            alt,
+            loading: 'lazy',
+            decoding: 'async',
+            // 保留 <img width="60%"> 这类手写尺寸
+            ...Object.fromEntries(['width', 'height', 'style'].filter((k) => node.properties?.[k] != null).map((k) => [k, node.properties[k]])),
+            ...(noDither ? {} : { 'data-dither-remote': '' }),
+          },
           children: [],
         };
         wrapFigure(node, index, parent, { img, href: srcRaw, caption, dither: !noDither });
