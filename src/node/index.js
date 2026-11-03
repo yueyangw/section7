@@ -18,6 +18,8 @@ import rehypeImages from './rehype-images.js';
 import rehypeAnchors from './rehype-anchors.js';
 import rehypeCodeChrome from './rehype-code.js';
 import ditherAssets from './dither-integration.js';
+import { processImage } from './dither.js';
+import { getFavicon } from './favicon.js';
 import { mergeSite } from './defaults.js';
 
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
@@ -73,6 +75,9 @@ const ROUTES = [
  */
 export default function section7(userSite = {}) {
   const site = mergeSite(typeof userSite === 'string' ? loadSite(userSite) : userSite);
+  // 页面渲染期要用的 Node 能力（sharp、联网抓图标）从这里注册，页面经 globalThis 调用：
+  // 主题源码会被 Vite 打进博客的构建产物，若直接 import sharp，博客仓库里解析不到这个依赖
+  globalThis.__section7Node = { processImage, getFavicon };
 
   const theme = {
     name: 'section7-theme',

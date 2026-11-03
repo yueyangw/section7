@@ -6,7 +6,7 @@
 import { dirname, resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import site from '../config/site';
-import { processImage } from '../node/dither.js';
+import { node } from './node';
 
 export interface Pic {
   /** 页面上显示的地址 */
@@ -35,7 +35,7 @@ export async function resolvePic(src: string, from?: string, dither = true): Pro
   }
   const abs = resolve(process.cwd(), from ? dirname(from) : '.', src);
   if (!existsSync(abs)) throw new Error(`${from ?? 'site.config'}: 找不到图片 ${src}`);
-  const r = await processImage(abs, site.dither);
+  const r = await node().processImage(abs, site.dither);
   return {
     src: dither ? r.dither : r.original,
     original: r.original,

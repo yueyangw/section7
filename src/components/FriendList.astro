@@ -1,14 +1,14 @@
 ---
 /** 友链：按 group 分组；未填 avatar 时构建期抓取对方站点图标，抓不到显示首字 */
 import { getCollection } from 'astro:content';
-import { getFavicon } from '../node/favicon.js';
+import { node } from '../lib/node';
 
 const friends = await getCollection('friends');
 const items = await Promise.all(
   friends.map(async (f) => ({
     ...f.data,
     host: new URL(f.data.url).host.replace(/^www\./, ''),
-    icon: f.data.avatar ?? (await getFavicon(f.data.url)),
+    icon: f.data.avatar ?? (await node().getFavicon(f.data.url)),
   })),
 );
 const groups = new Map<string, typeof items>();
