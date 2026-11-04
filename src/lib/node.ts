@@ -1,7 +1,10 @@
 /** 由 section7() 集成在 Node 端注册的构建函数（见 src/node/index.js），避免把 sharp 等依赖打进页面产物 */
+import type { PinnedRepo } from '../config/types';
+
 interface Section7Node {
   processImage(file: string, d: unknown): Promise<{ dither: string; original: string; width: number; height: number }>;
   getFavicon(url: string): Promise<string | null>;
+  getPinned(user: string): Promise<PinnedRepo[]>;
 }
 
 export function node(): Section7Node {

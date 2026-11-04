@@ -78,7 +78,7 @@ section7 把每一页都排成一份手册：左栏是 `NAME`、`SYNOPSIS`、`DE
 ### 页面
 
 - 首页、归档、类型、标签、系列文章、置顶
-- 笔记（通联日志式）、项目、关于（含友链）
+- 笔记（通联日志式）、项目（自动列出 GitHub 置顶仓库）、关于（含友链）
 - QSL 卡片墙、留言簿、自定义页面、404
 
 </td>
@@ -170,26 +170,27 @@ pnpm up section7-theme
 
 `site.yaml` 只需要写你想覆盖的字段，其余字段取主题默认值，全部默认值见 [`src/node/defaults.js`](src/node/defaults.js)。也可以直接给 `section7({...})` 传一个对象。
 
-| 想做的事        | 方法                                                   |
-| --------------- | ------------------------------------------------------ |
-| 改配色、字号等  | `site.customCss` 指向一份样式表，覆盖 CSS 变量         |
-| 改写某个页面    | 在博客仓库的 `src/pages/` 下建同名路由，优先于主题路由 |
-| 加一个导航页    | 在 `content/pages/` 写 Markdown，frontmatter 设 `nav`  |
-| 开评论 / 阅读量 | 在 `site.yaml` 里填 `artalk.server` 和 `artalk.site`   |
+| 想做的事                   | 方法                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------ |
+| 改配色、字号等             | `site.customCss` 指向一份样式表，覆盖 CSS 变量                                                   |
+| 改写某个页面               | 在博客仓库的 `src/pages/` 下建同名路由，优先于主题路由                                           |
+| 加一个导航页               | 在 `content/pages/` 写 Markdown，frontmatter 设 `nav`                                            |
+| 项目页列出 GitHub 置顶仓库 | 默认开启，取 `author.github` 的置顶；`projects.githubUser` 换用户，`projects.pinned: false` 关闭 |
+| 开评论 / 阅读量            | 在 `site.yaml` 里填 `artalk.server` 和 `artalk.site`                                             |
 
 ## 写作
 
 所有内容都放在博客仓库的 `src/` 下，schema 定义见 [`content.ts`](content.ts)。
 
-| 路径                           | 页面           | 说明                                                                                                                        |
-| ------------------------------ | -------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `content/posts/**/index.md`    | 文章           | 可按年/月/日嵌套目录。`pinned: true` 置顶，首页排在最前，其余列表显示标记；多篇置顶时写数字，数字小的在前                   |
-| `content/notes/*.md`           | `/notes/` 笔记 | 通联日志式排版。frontmatter 支持 `qth` `wx` `images`                                                                        |
-| `content/about/index.md`       | `/about/` 关于 | `photo` `photoSide` `greeting` `facts` `history` `now` 控制版式，正文放进照片旁的文字框，友链接在下面                       |
-| `data/friends.yaml`            | 关于页 FRIENDS | `avatar` 可以省略，构建期会自动抓取对方站点的图标                                                                           |
-| `content/qsl/<名>/card.yaml`   | `/qsl/` QSL    | `call` `dir`(rcvd/sent/mine) `date` `utc` `freq` `mode` `rst` `dxcc` `via` `front` `back`；不写 `back` 时按通联记录生成背面 |
-| `content/projects/*/index.mdx` | 项目           |                                                                                                                             |
-| `content/pages/*.md`           | 自定义页面     | 设置 `nav` 后进入首页导航                                                                                                   |
+| 路径                           | 页面              | 说明                                                                                                                        |
+| ------------------------------ | ----------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `content/posts/**/index.md`    | 文章              | 可按年/月/日嵌套目录。`pinned: true` 置顶，首页排在最前，其余列表显示标记；多篇置顶时写数字，数字小的在前                   |
+| `content/notes/*.md`           | `/notes/` 笔记    | 通联日志式排版。frontmatter 支持 `qth` `wx` `images`                                                                        |
+| `content/about/index.md`       | `/about/` 关于    | `photo` `photoSide` `greeting` `facts` `history` `now` 控制版式，正文放进照片旁的文字框，友链接在下面                       |
+| `data/friends.yaml`            | 关于页 FRIENDS    | `avatar` 可以省略，构建期会自动抓取对方站点的图标                                                                           |
+| `content/qsl/<名>/card.yaml`   | `/qsl/` QSL       | `call` `dir`(rcvd/sent/mine) `date` `utc` `freq` `mode` `rst` `dxcc` `via` `front` `back`；不写 `back` 时按通联记录生成背面 |
+| `content/projects/*/index.mdx` | `/projects/` 项目 | 有详情页的项目。`repo: owner/name` 标明对应仓库；GitHub 主页置顶的仓库会自动列在下方 PINNED 表里，已有本地项目的不重复列出  |
+| `content/pages/*.md`           | 自定义页面        | 设置 `nav` 后进入首页导航                                                                                                   |
 
 frontmatter 里的图片可以写相对当前文件的路径（构建期抖动），也可以写图床 URL（浏览器端抖动）。
 
@@ -235,6 +236,7 @@ const b = 3; // [!code highlight]
 
 - **抖动缓存**：抖动结果缓存在博客仓库的 `.cache/` 里。
 - **图床图片**：浏览器端读取像素需要图床允许跨域（CORS）。不允许时退回 SVG 双色滤镜，图片不会显示失败。
+- **GitHub 置顶仓库**：没有 token 时解析 `github.com/<用户>` 主页；设置 `GITHUB_TOKEN` 后改走 GraphQL API，更稳定，还能拿到仓库主页地址。结果缓存在 `.cache/github-pinned.json`，1 天后刷新，获取失败时沿用上次的结果。
 - **友链图标**：缓存在 `.cache/favicons.json`，成功的 30 天后刷新，失败的 1 天后重试。设置 `SECTION7_OFFLINE=1` 时只用缓存，不联网。
 - **缓存失效**：主题的构建代码、图片或公式配置变化时，会自动清掉 Astro 的内容缓存并重新渲染（指纹记在 `.cache/section7-build.txt`）。
 - **公式迁移**：迁移旧文章的过渡期，可以用 `MATH_STRICT=0` 把公式错误降级为警告。

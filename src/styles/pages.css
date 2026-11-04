@@ -903,3 +903,25 @@ img.avatar {
   height: 96px;
   box-sizing: border-box;
 }
+
+/* 项目页 PINNED：GitHub 置顶仓库 */
+.pinned-table td.repo {
+  white-space: nowrap;
+}
+.pinned-table td:last-child {
+  min-width: 240px;
+}
+.lang-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 6px;
+  border: 1px solid var(--ink);
+  background: var(--paper-2);
+  vertical-align: baseline;
+}
+.pinned-note {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}

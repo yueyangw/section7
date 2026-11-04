@@ -2,27 +2,72 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/Section.astro';
+import site from '../../config/site';
+import { node } from '../../lib/node';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const status = { active: '进行中', paused: '暂停', done: '完成' };
+
+// GitHub 主页置顶的仓库；本地已有项目页的（repo 字段或 links 指向同一仓库）不重复列出
+const user = site.projects.githubUser || site.author.github;
+const known = new Set(
+  projects.flatMap((p) => [
+    p.data.repo,
+    ...p.data.links.map((l) => l.url.match(/^https?:\/\/github\.com\/([^/]+\/[^/#?]+)/i)?.[1]),
+  ]).filter(Boolean).map((r) => r!.replace(/\.git$/, '').toLowerCase()),
+);
+const pinned = site.projects.pinned && user
+  ? (await node().getPinned(user)).filter((r) => !known.has(`${r.owner}/${r.name}`.toLowerCase()))
+  : [];
+const fmt = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, '')}k` : String(n));
 ---
 
 <BaseLayout title="项目" manCenter="PROJECTS">
   <Section name="PROJECTS" rule={false}>
     <h1 class="page-title" style="margin-bottom:24px">项目</h1>
-    <div class="table-scroll">
-      <table class="log-table">
-        <thead><tr><th>NAME</th><th>STATUS</th><th>PERIOD</th><th>SUMMARY</th></tr></thead>
-        <tbody>
-          {projects.map((p) => (
-            <tr>
-              <td><a href={`/projects/${p.id}/`}>{p.data.title}</a></td>
-              <td class="date">{status[p.data.status]}</td>
-              <td class="date">{p.data.period ?? ''}</td>
-              <td>{p.data.summary}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    {projects.length > 0 && (
+      <div class="table-scroll">
+        <table class="log-table">
+          <thead><tr><th>NAME</th><th>STATUS</th><th>PERIOD</th><th>SUMMARY</th></tr></thead>
+          <tbody>
+            {projects.map((p) => (
+              <tr>
+                <td><a href={`/projects/${p.id}/`}>{p.data.title}</a></td>
+                <td class="date">{status[p.data.status]}</td>
+                <td class="date">{p.data.period ?? ''}</td>
+                <td>{p.data.summary}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+    {projects.length === 0 && pinned.length === 0 && <p class="lede">暂无项目。</p>}
   </Section>
+  {pinned.length > 0 && (
+    <Section name="PINNED">
+      <div class="table-scroll">
+        <table class="log-table pinned-table">
+          <thead><tr><th>REPO</th><th>LANG</th><th>STARS</th><th>FORKS</th><th>SUMMARY</th></tr></thead>
+          <tbody>
+            {pinned.map((r) => (
+              <tr>
+                <td class="repo">
+                  <a href={r.url}>{r.owner.toLowerCase() === user.toLowerCase() ? r.name : `${r.owner}/${r.name}`}</a>
+                  {r.homepage && <> · <a class="mono" href={r.homepage}>site</a></>}
+                </td>
+                <td class="date">
+                  {r.language && <span class="lang-dot" style={r.languageColor ? `background:${r.languageColor}` : undefined} />}
+                  {r.language}
+                </td>
+                <td class="date">★ {fmt(r.stars)}</td>
+                <td class="date">{fmt(r.forks)}</td>
+                <td>{r.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="pinned-note mono">via <a href={`https://github.com/${user}`}>github.com/{user}</a></p>
+    </Section>
+  )}
 </BaseLayout>

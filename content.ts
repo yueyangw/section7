@@ -134,6 +134,8 @@ const projects = defineCollection({
       links: z.array(z.object({ label: z.string(), url: z.string() })).default([]),
       cover: image().optional(),
       order: z.number().default(0),
+      /** 对应的 GitHub 仓库 owner/name；与置顶仓库去重 */
+      repo: z.string().optional(),
     }),
 });
 

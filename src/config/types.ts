@@ -8,6 +8,19 @@ export interface FooterBlock {
   value: string | { label: string; url: string }[];
 }
 
+/** GitHub 置顶仓库（构建期获取） */
+export interface PinnedRepo {
+  owner: string;
+  name: string;
+  url: string;
+  description: string;
+  language: string;
+  languageColor: string;
+  stars: number;
+  forks: number;
+  homepage: string;
+}
+
 /** 站点配置：博客仓库的 site.config.ts 只需写想覆盖的字段，其余取主题默认值 */
 export interface SiteConfig {
   /** 站点根地址，如 https://example.com */
@@ -40,6 +53,11 @@ export interface SiteConfig {
   home: { logCount: number; noteCount: number; banner: boolean | { src: string; caption?: string; alt?: string } };
   /** QSL 页：有卡片时自动出现在导航里 */
   qsl: { navLabel: string; navOrder: number };
+  /**
+   * 项目页：pinned 为 true 时，构建期把 GitHub 主页置顶的仓库列进项目页。
+   * githubUser 留空则用 author.github；已有本地项目（repo 或 links 指向同一仓库）的不重复列出
+   */
+  projects: { pinned: boolean; githubUser: string };
   dither: {
     algorithm: 'atkinson' | 'floyd-steinberg' | 'bayer';
     ink: string;

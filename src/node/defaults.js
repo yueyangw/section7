@@ -26,6 +26,7 @@ export const defaultSite = {
   ],
   home: { logCount: 6, noteCount: 3, banner: true },
   qsl: { navLabel: 'QSL', navOrder: 20 },
+  projects: { pinned: true, githubUser: '' },
   dither: { algorithm: 'atkinson', ink: '#1f2a5a', paper: '#f6f5f1', maxWidth: 1400, originalMaxWidth: 2400 },
   math: {
     strict: true,
