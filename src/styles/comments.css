@@ -94,7 +94,8 @@
   padding: 0;
   border: 0;
   resize: vertical;
-  background: repeating-linear-gradient(to bottom, transparent 0 31px, var(--inset) 31px 32px);
+  background: repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule) 31px 32px);
+  background-attachment: local;
   font-family: var(--font-serif);
   font-size: 17px;
   line-height: 32px;

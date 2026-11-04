@@ -43,6 +43,9 @@ export default function CommentSection({ server, site, pageKey, pageTitle }: Pro
   useEffect(() => {
     if (!server || !el.current) return;
     let instance: { destroy(): void } | undefined;
+    // Artalk 异步生成编辑框：出现后再插入栏名（labelEditor 可重复调用）
+    const mo = new MutationObserver(() => el.current && labelEditor(el.current));
+    mo.observe(el.current, { childList: true, subtree: true });
     (async () => {
       try {
         const [{ default: Artalk }] = await Promise.all([import('artalk'), import('artalk/dist/Artalk.css')]);
@@ -61,12 +64,14 @@ export default function CommentSection({ server, site, pageKey, pageTitle }: Pro
           sendBtn: '寄出 →',
           locale: 'zh-CN',
         });
-        labelEditor(el.current!);
       } catch {
         setFailed(true);
       }
     })();
-    return () => instance?.destroy();
+    return () => {
+      mo.disconnect();
+      instance?.destroy();
+    };
   }, [server, site, pageKey, pageTitle]);
 
   if (!server) return <p className="comments-note">评论服务尚未配置（site.ts → artalk.server）。</p>;
