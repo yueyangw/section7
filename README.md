@@ -62,7 +62,7 @@ home:
 
 | 路径 | 页面 | 说明 |
 | --- | --- | --- |
-| `content/posts/**/index.md` | 文章 | 可按 年/月/日 嵌套目录 |
+| `content/posts/**/index.md` | 文章 | 可按 年/月/日 嵌套目录；`pinned: true` 置顶（首页排在最前，其余列表显示标记；多篇置顶可写数字，小的在前） |
 | `content/notes/*.md` | `/notes/` 笔记 | 通联日志式排版；frontmatter `qth` `wx` `images`（0 / 1 / 2 / 3+ 张各有版式） |
 | `content/about/index.md` | `/about/` 关于 | `photo` `photoSide` `greeting` `facts` `history` `now` 控制版式，正文进照片旁的文字框；友链接在下面 |
 | `data/friends.yaml` | 关于页 FRIENDS | `avatar` 可省略，构建期自动抓对方站点图标 |

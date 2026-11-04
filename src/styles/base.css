@@ -220,6 +220,19 @@ a.type-tag.solid:visited {
   font-weight: 700;
   line-height: 1.4;
 }
+.pin-badge {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 6px;
+  border: 1px solid var(--indigo);
+  background: var(--indigo);
+  color: var(--on-dark);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  vertical-align: 2px;
+}
 .new-badge[hidden] {
   display: none;
 }

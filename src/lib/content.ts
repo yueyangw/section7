@@ -13,6 +13,19 @@ export async function getNotes() {
   return all.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
+/** 置顶序号；未置顶为 undefined */
+export function pinOrder(p: Post): number | undefined {
+  const v = p.data.pinned;
+  if (v === true) return 0;
+  return typeof v === 'number' ? v : undefined;
+}
+
+/** 置顶文章在前（按序号，其次按日期），其余按日期倒序 */
+export function pinnedFirst(posts: Post[]): Post[] {
+  const pinned = posts.filter((p) => pinOrder(p) !== undefined).sort((a, b) => pinOrder(a)! - pinOrder(b)! || b.data.date.getTime() - a.data.date.getTime());
+  return [...pinned, ...posts.filter((p) => pinOrder(p) === undefined)];
+}
+
 export const postUrl = (p: Post) => `/posts/${p.id}/`;
 
 export function groupByYear<T extends { data: { date: Date } }>(items: T[], yearOf: (d: Date) => number) {

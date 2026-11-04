@@ -7,13 +7,13 @@ import Section from '../components/Section.astro';
 import PostTable from '../components/PostTable.astro';
 import { mdxComponents } from '../components/mdx';
 import Pic from '../components/Pic.astro';
-import { getPosts, getNotes, getNav } from '../lib/content';
+import { getPosts, getNotes, getNav, pinnedFirst } from '../lib/content';
 import { resolvePic } from '../lib/images';
 import { ymdHm } from '../lib/date';
 import { POST_TYPES } from '../config/site';
 import CommentLatest from '../islands/LatestGuestbook';
 
-const posts = (await getPosts()).slice(0, site.home.logCount);
+const posts = pinnedFirst(await getPosts()).slice(0, site.home.logCount);
 const notes = (await getNotes()).slice(0, site.home.noteCount);
 const aboutEntry = await getEntry('home', 'about');
 const About = aboutEntry ? (await render(aboutEntry)).Content : null;

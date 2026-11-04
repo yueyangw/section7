@@ -4,6 +4,7 @@ date: 2026-11-02T20:00:00+08:00
 type: OI
 tags: [数学, 样例]
 summary: 覆盖构建期 MathJax→SVG 的 12 类用例，作为回归基线。
+pinned: true
 ---
 
 ## 行内公式

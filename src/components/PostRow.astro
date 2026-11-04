@@ -1,6 +1,6 @@
 ---
 import type { Post } from '../lib/content';
-import { postUrl } from '../lib/content';
+import { postUrl, pinOrder } from '../lib/content';
 import { ymd } from '../lib/date';
 import TypeTag from './TypeTag.astro';
 import NewBadge from './NewBadge.astro';
@@ -14,6 +14,7 @@ const { post } = Astro.props;
   <td class="date"><time datetime={post.data.date.toISOString()}>{ymd(post.data.date)}</time></td>
   <td class="ty"><TypeTag type={post.data.type} link /></td>
   <td>
+    {pinOrder(post) !== undefined && <span class="pin-badge">置顶</span>}
     <a href={postUrl(post)}>{post.data.title}</a>
     {post.data.draft && <span class="mono" style="font-size:12px"> [DRAFT]</span>}
     <NewBadge date={post.data.date} />

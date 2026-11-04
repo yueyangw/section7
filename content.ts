@@ -19,6 +19,8 @@ const posts = defineCollection({
       tags: z.array(z.string()).default([]),
       summary: z.string().optional(),
       draft: z.boolean().default(false),
+      /** 置顶：true，或数字（数字小的排前面；true 视为 0）。首页 LOG 里排在最前，其余列表只显示标记 */
+      pinned: z.union([z.boolean(), z.number()]).default(false),
       series: z.object({ name: z.string(), order: z.number() }).optional(),
       cover: image().optional(),
       comments: z.boolean().default(true),
