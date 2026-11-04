@@ -222,6 +222,9 @@
   background: none;
   animation: none;
 }
+.s7-comments.artalk > .atk-list > .atk-list-header .atk-dropdown-wrap .atk-dropdown-item {
+  margin: 0 !important;
+}
 .s7-comments.artalk > .atk-list > .atk-list-header .atk-dropdown-wrap .atk-dropdown-item span {
   display: inline-flex;
   align-items: center;
