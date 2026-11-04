@@ -1,0 +1,554 @@
+/*
+ * 评论区：给 Artalk 官方前端换上站点风格（设计稿 G-Comments）。
+ * 只覆盖样式，不改 Artalk 的功能；选择器统一加 .s7-comments 前缀，优先级高于 Artalk.css。
+ * 编辑框的 FROM / EMAIL / WEB / MESSAGE 栏名由 CommentSection 在初始化后插入。
+ */
+.s7-comments.artalk {
+  --at-color-font: var(--ink);
+  --at-color-deep: var(--ink);
+  --at-color-sub: var(--ink-2);
+  --at-color-grey: var(--ink-2);
+  --at-color-meta: var(--ink-2);
+  --at-color-border: var(--rule);
+  --at-color-light: var(--link);
+  --at-color-main: var(--link);
+  --at-color-bg: var(--card);
+  --at-color-bg-grey: var(--paper-2);
+  --at-color-bg-grey-transl: var(--paper-2);
+  --at-color-bg-light: var(--paper);
+  --at-color-gradient: linear-gradient(180deg, transparent, var(--card));
+  font-family: var(--font-serif);
+  color: var(--ink);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.s7-comments.artalk * {
+  border-radius: 0 !important;
+}
+
+/* ---- 编辑框 ---- */
+.s7-comments .atk-main-editor {
+  margin: 0;
+  background: var(--card);
+  border: 1px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--rule);
+  overflow: visible;
+}
+.s7-comments .atk-main-editor > .atk-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  padding: 0;
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--ink);
+}
+.s7-comments .s7-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 12px;
+  border-right: 1px solid var(--bevel-lo);
+  cursor: text;
+}
+.s7-comments .s7-field:last-child {
+  border-right: 0;
+}
+.s7-comments .s7-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+}
+.s7-comments .atk-main-editor > .atk-header input {
+  width: 100%;
+  min-height: 28px;
+  margin: 0 !important;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--ink);
+}
+.s7-comments .atk-main-editor > .atk-header input:focus {
+  outline: none;
+}
+.s7-comments .s7-field:focus-within {
+  background: var(--card);
+  box-shadow: inset 0 -2px 0 var(--indigo);
+}
+.s7-comments .atk-main-editor > .atk-textarea-wrap {
+  padding: 16px 18px 8px;
+}
+.s7-comments .atk-main-editor > .atk-textarea-wrap > .s7-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+.s7-comments .atk-main-editor > .atk-textarea-wrap > .atk-textarea {
+  min-height: 112px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  resize: vertical;
+  background: repeating-linear-gradient(to bottom, transparent 0 31px, var(--inset) 31px 32px);
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 32px;
+  color: var(--ink);
+}
+.s7-comments input::placeholder,
+.s7-comments textarea::placeholder {
+  color: #7a8090;
+}
+.s7-comments .atk-main-editor > .atk-plug-panel-wrap {
+  border-top: 1px dashed var(--bevel-lo);
+}
+.s7-comments .atk-main-editor > .atk-bottom {
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 16px;
+  border-top: 1px dashed var(--bevel-lo);
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-plug-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  background: var(--paper-2);
+  border: 1px solid var(--ink);
+  box-shadow:
+    inset 1px 1px 0 var(--bevel-hi),
+    inset -2px -2px 0 var(--bevel-lo);
+  color: var(--ink);
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-plug-btn:not(:last-child) {
+  margin-right: 6px;
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-plug-btn:hover {
+  background: var(--paper-2);
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-plug-btn.active {
+  background: var(--indigo);
+  border-color: var(--indigo-border);
+  box-shadow: none;
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-plug-btn i,
+.s7-comments .atk-main-editor > .atk-bottom .atk-plug-btn svg {
+  color: inherit;
+  fill: currentColor;
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-plug-btn.active i,
+.s7-comments .atk-main-editor > .atk-bottom .atk-plug-btn.active svg path {
+  color: var(--on-dark);
+  fill: var(--on-dark);
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-state-btn {
+  height: 36px;
+  background: var(--lamp-bg);
+  border: 1px solid var(--lamp);
+  color: var(--lamp);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-send-btn {
+  min-width: 0;
+  height: 44px;
+  padding: 0 20px;
+  background: var(--indigo);
+  border: 1px solid var(--indigo-border);
+  box-shadow:
+    inset 1px 1px 0 var(--indigo-hi),
+    inset -2px -2px 0 var(--indigo-lo);
+  color: var(--on-dark);
+  font-family: var(--font-mono);
+  font-size: 15px;
+}
+.s7-comments .atk-main-editor > .atk-bottom .atk-send-btn:active {
+  opacity: 1;
+  box-shadow:
+    inset -1px -1px 0 var(--indigo-hi),
+    inset 2px 2px 0 var(--indigo-lo);
+}
+/* 回复时编辑框移到评论下方 */
+.s7-comments .atk-main-editor.editor-traveling {
+  margin: 4px 0 14px;
+  background: #fffdf7;
+  box-shadow: none;
+}
+.s7-comments .atk-notify-wrap .atk-notify-content {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* ---- 列表头：条数 + 排序 ---- */
+.s7-comments.artalk > .atk-list > .atk-list-header {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--ink);
+  font-family: var(--font-mono);
+}
+.s7-comments.artalk > .atk-list > .atk-list-header .atk-comment-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: default;
+}
+.s7-comments.artalk > .atk-list > .atk-list-header .atk-comment-count .atk-comment-count-num {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--indigo);
+}
+.s7-comments.artalk > .atk-list > .atk-list-header .atk-dropdown-wrap .atk-arrow-down-icon {
+  display: none;
+}
+/* 排序下拉改成常驻的一排按钮 */
+.s7-comments.artalk > .atk-list > .atk-list-header .atk-dropdown-wrap .atk-dropdown {
+  position: static;
+  display: flex !important;
+  gap: 6px;
+  width: auto;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  animation: none;
+}
+.s7-comments.artalk > .atk-list > .atk-list-header .atk-dropdown-wrap .atk-dropdown-item span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  background: var(--paper-2);
+  border: 1px solid var(--ink);
+  box-shadow:
+    inset 1px 1px 0 var(--bevel-hi),
+    inset -2px -2px 0 var(--bevel-lo);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--ink);
+}
+.s7-comments.artalk > .atk-list > .atk-list-header .atk-dropdown-wrap .atk-dropdown-item.active span {
+  background: var(--indigo);
+  border-color: var(--indigo-border);
+  box-shadow: none;
+  color: var(--on-dark);
+}
+.s7-comments.artalk > .atk-list > .atk-list-header .atk-right-action > span {
+  font-size: 12px;
+}
+
+/* ---- 顶层评论：纸卡片，头像 + 日志式表头 ---- */
+.s7-comments .atk-list-comments-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 22px;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap {
+  padding: 0;
+  border: 1px solid var(--ink);
+  background: var(--card);
+  box-shadow: 4px 4px 0 var(--rule);
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  padding: 0;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main {
+  display: contents;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-avatar {
+  grid-column: 1;
+  grid-row: 1;
+  float: none;
+  padding: 0;
+  background: var(--paper-2);
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-avatar img {
+  display: block;
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  margin: 0;
+  overflow: visible;
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--ink);
+  font-family: var(--font-mono);
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0 !important;
+  padding: 7px 12px;
+  border-right: 1px solid var(--bevel-lo);
+  font-size: 15px;
+  color: var(--ink);
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-item::before {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-nick::before {
+  content: 'FROM';
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-date::before {
+  content: 'DATE';
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-nick,
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-nick a {
+  font-size: 15px;
+  font-weight: 700;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-badge-wrap {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-badge-wrap:empty {
+  display: none;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-header > .atk-ua-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-body {
+  grid-column: 1 / -1;
+  padding: 16px 20px 6px;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-footer {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 6px 20px 14px;
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-comment-children {
+  grid-column: 1 / -1;
+  margin: 0 20px;
+  padding: 4px 0 8px 24px;
+  border-top: 1px dashed var(--bevel-lo);
+}
+.s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-main-editor {
+  grid-column: 1 / -1;
+  margin: 0 20px 18px 44px;
+}
+
+/* ---- 回复（嵌套） ---- */
+.s7-comments .atk-comment-children > .atk-comment-wrap {
+  margin: 12px 0 0;
+  padding: 0;
+  border: 0;
+}
+.s7-comments .atk-comment-children .atk-comment > .atk-avatar img {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ink);
+  object-fit: cover;
+}
+.s7-comments .atk-comment-children .atk-comment > .atk-main {
+  margin-left: 48px;
+}
+.s7-comments .atk-comment-children .atk-comment > .atk-main > .atk-header {
+  gap: 4px 10px;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.s7-comments .atk-comment-children .atk-comment > .atk-main > .atk-header .atk-item:not(:last-child) {
+  margin-right: 0;
+}
+.s7-comments .atk-comment-children .atk-comment > .atk-main > .atk-header .atk-nick,
+.s7-comments .atk-comment-children .atk-comment > .atk-main > .atk-header .atk-nick a {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--indigo);
+}
+.s7-comments .atk-comment > .atk-main > .atk-header .atk-item.atk-reply-at {
+  margin-left: 0;
+}
+.s7-comments .atk-comment > .atk-main > .atk-header .atk-item.atk-reply-at > .atk-arrow {
+  display: none;
+}
+.s7-comments .atk-comment > .atk-main > .atk-header .atk-item.atk-reply-at::before {
+  content: 'RE:';
+  color: var(--ink-2);
+}
+.s7-comments .atk-comment > .atk-main > .atk-header .atk-item.atk-reply-at > .atk-nick {
+  margin-left: 4px;
+}
+.s7-comments .atk-comment-children .atk-comment > .atk-main > .atk-body {
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+/* ---- 标记、正文、操作 ---- */
+.s7-comments .atk-comment .atk-header .atk-badge,
+.s7-comments .atk-comment .atk-header .atk-pinned-badge {
+  padding: 0 5px;
+  background: var(--indigo) !important;
+  color: var(--on-dark) !important;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 17px;
+}
+.s7-comments .atk-comment .atk-header .atk-ua {
+  padding: 0 5px;
+  background: transparent;
+  border: 1px solid var(--rule);
+  font-size: 11px;
+  color: var(--ink-2);
+}
+.s7-comments .atk-comment .atk-body {
+  font-size: 17px;
+  line-height: 1.8;
+}
+.s7-comments .atk-comment .atk-body img {
+  max-width: min(100%, 320px);
+  border: 1px solid var(--ink);
+}
+.s7-comments .atk-comment .atk-body :not(pre) > code {
+  padding: 1px 5px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+.s7-comments .atk-comment .atk-body pre {
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.s7-comments .atk-comment .atk-footer .atk-actions {
+  gap: 4px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.s7-comments .atk-comment .atk-footer .atk-actions > span:not(:last-child):not(.atk-hide) {
+  margin-right: 0;
+}
+.s7-comments .atk-comment .atk-footer .atk-actions .atk-common-action-btn {
+  color: var(--link);
+  cursor: pointer;
+}
+/* 头像、留言里的图片与全站一致做双色处理 */
+.s7-comments .atk-avatar img,
+.s7-comments .atk-comment .atk-body img {
+  filter: url(#s7-duotone);
+}
+/* 审核中 */
+.s7-comments .atk-comment > .atk-main > .atk-body > .atk-pending {
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  background: var(--lamp-bg);
+  border: 1px dashed var(--lamp);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--lamp);
+}
+.s7-comments .atk-comment > .atk-main > .atk-body > .atk-reply-to {
+  margin: 8px 0;
+  padding: 6px 12px;
+  border: 1px dashed var(--rule);
+}
+.s7-comments .atk-comment > .atk-main > .atk-body > .atk-collapsed {
+  background: var(--paper-2);
+  font-family: var(--font-mono);
+}
+.s7-comments .atk-comment .atk-height-limit-btn {
+  border: 1px solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* ---- 空状态、加载更多、页脚 ---- */
+.s7-comments .atk-list-no-comment {
+  height: auto;
+  min-height: 120px;
+  margin-top: 14px;
+  border: 1px dashed var(--ink);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.s7-comments .atk-list-read-more {
+  margin-top: 22px;
+  padding-bottom: 0;
+  border-top: 0;
+}
+.s7-comments .atk-list-read-more .atk-list-read-more-inner {
+  min-height: 44px;
+  width: auto;
+  max-width: max-content;
+  margin: 0 auto;
+  padding: 0 18px;
+  background: var(--paper-2);
+  border: 1px solid var(--ink);
+  box-shadow:
+    inset 1px 1px 0 var(--bevel-hi),
+    inset -2px -2px 0 var(--bevel-lo);
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.s7-comments .atk-list-read-more .atk-list-read-more-inner > .atk-text {
+  color: var(--ink);
+}
+.s7-comments .atk-list-footer {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.s7-comments .atk-list-footer .atk-copyright {
+  color: var(--ink-2);
+}
+.s7-comments .atk-pagination .atk-btn,
+.s7-comments .atk-layer-dialog .atk-btn {
+  border: 1px solid var(--ink);
+  font-family: var(--font-mono);
+}
+@media (max-width: 640px) {
+  .s7-comments .atk-main-editor > .atk-header {
+    grid-template-columns: 1fr;
+  }
+  .s7-comments .s7-field {
+    border-right: 0;
+    border-bottom: 1px solid var(--bevel-lo);
+  }
+  .s7-comments .s7-field:last-child {
+    border-bottom: 0;
+  }
+  .s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-comment-children {
+    margin: 0 12px;
+    padding-left: 8px;
+  }
+  .s7-comments .atk-list-comments-wrap > .atk-comment-wrap > .atk-comment > .atk-main > .atk-main-editor {
+    margin: 0 12px 14px;
+  }
+}
